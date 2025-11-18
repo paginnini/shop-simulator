@@ -1,0 +1,23 @@
+[gd_scene load_steps=4 format=3 uid="uid://csnaauwit8iyh"]
+
+[ext_resource type="Script" uid="uid://dp8y5drsg1g0w" path="res://scripts/client.gd" id="1_5f806"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7gnwo"]
+height = 1.7640626
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_5f806"]
+
+[node name="client" type="CharacterBody3D"]
+script = ExtResource("1_5f806")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+
+[node name="Label3D" type="Label3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+shape = SubResource("CapsuleShape3D_7gnwo")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19999999, 0)
+mesh = SubResource("CapsuleMesh_5f806")

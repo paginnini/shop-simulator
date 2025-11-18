@@ -1,0 +1,6 @@
+[gd_resource type="StandardMaterial3D" format=3 uid="uid://dgtacgd3aer0e"]
+
+[resource]
+render_priority = -1
+cull_mode = 1
+shading_mode = 0

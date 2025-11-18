@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://b0tyhihc8bp56"]
+
+[ext_resource type="Script" uid="uid://dtqlicqvw7xtg" path="res://scripts/product.gd" id="1_4gq7n"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_r3ghi"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3ghi"]
+albedo_color = Color(0, 1, 0, 1)
+
+[node name="product" type="Node3D" groups=["product"]]
+script = ExtResource("1_4gq7n")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("BoxMesh_r3ghi")
+surface_material_override/0 = SubResource("StandardMaterial3D_r3ghi")
+
+[node name="labels" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0999999, 0)
+
+[node name="label_info" type="Label3D" parent="labels"]
+transform = Transform3D(1, 0, 0, 0, 0.76604444, 0.6427876, 0, -0.6427876, 0.76604444, 0, 0.3, 0)
+billboard = 1

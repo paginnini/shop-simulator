@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=3 uid="uid://d1ndh2261gwhl"]
+
+[ext_resource type="Script" uid="uid://df4vxuqier8yx" path="res://scripts/food.gd" id="1_xven1"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_xven1"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_r3ghi"]
+albedo_color = Color(1, 0, 0, 1)
+
+[node name="food" type="Node3D" groups=["food"]]
+script = ExtResource("1_xven1")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+mesh = SubResource("SphereMesh_xven1")
+surface_material_override/0 = SubResource("StandardMaterial3D_r3ghi")
+
+[node name="labels" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+
+[node name="label_cost_nutrition" type="Label3D" parent="labels"]
+transform = Transform3D(1, 0, 0, 0, 0.76604444, 0.6427876, 0, -0.6427876, 0.76604444, 0, 0.3, 0)
+billboard = 1

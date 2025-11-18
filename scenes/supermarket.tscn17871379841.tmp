@@ -1,0 +1,378 @@
+[gd_scene load_steps=13 format=3 uid="uid://b0bx4g0o4yvxs"]
+
+[ext_resource type="Script" uid="uid://bsgeflv7e1rvv" path="res://scripts/camera_3d.gd" id="1_07jrh"]
+[ext_resource type="Script" uid="uid://02d45lbmilxj" path="res://scenes/main.gd" id="1_grrqp"]
+[ext_resource type="Script" uid="uid://b8v1uy2rfwdg3" path="res://scripts/clientmanager.gd" id="1_vi15o"]
+[ext_resource type="PackedScene" uid="uid://d1ndh2261gwhl" path="res://scenes/food.tscn" id="3_gt2a7"]
+[ext_resource type="PackedScene" uid="uid://jtlu51femnhr" path="res://scenes/drink.tscn" id="4_reuu7"]
+[ext_resource type="PackedScene" uid="uid://b0tyhihc8bp56" path="res://scenes/product.tscn" id="6_kls3s"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gt2a7"]
+albedo_color = Color(0.11372549, 0.58431375, 1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_reuu7"]
+albedo_color = Color(0.62352943, 0.12156863, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_grrqp"]
+albedo_color = Color(1, 1, 0, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kls3s"]
+albedo_color = Color(0.21568628, 0.54901963, 0.14117648, 1)
+
+[sub_resource type="NavigationMesh" id="NavigationMesh_vi15o"]
+vertices = PackedVector3Array(9.950001, 0.5, -22.650002, 11.200001, 0.5, -22.900002, 10.200001, 0.5, -23.900002, 9.450001, 0.5, -8.400002, 9.950001, 0.5, -9.400002, 9.450001, 0.5, -9.900002, 2.4500008, 0.5, -5.4000015, 9.450001, 0.5, -15.150002, 9.950001, 0.5, -16.150002, 9.450001, 0.5, -16.650002, 9.450001, 0.5, -21.900002, 10.450001, 0.5, -25.400002, 9.200001, 0.5, -24.900002, 8.700001, 0.5, -23.150002, 12.200001, 0.5, -25.900002, 12.200001, 0.5, -30.650002, 8.200001, 0.5, -30.650002, 8.200001, 0.5, -25.650002, 2.7000008, 0.5, -22.900002, 9.450001, 0.5, -5.4000015, -8.549999, 0.5, -9.900002, -9.549999, 0.5, -8.900002, -8.549999, 0.5, -8.150002, -2.5499992, 0.5, -6.1500015, -8.549999, 0.5, -17.150002, -9.549999, 0.5, -15.900002, -8.549999, 0.5, -15.150002, -2.5499992, 0.5, -22.900002, -8.549999, 0.5, -6.1500015, -8.799999, 0.5, -22.900002, -2.2999992, 0.5, -5.4000015, -8.799999, 0.5, -2.4000015, -9.549999, 0.5, -1.9000015, -12.049999, 0.5, -1.9000015, -12.049999, 0.5, 7.0999985, -4.299999, 0.5, 7.0999985, -1.2999992, 0.5, -4.9000015, -3.5499992, 0.5, 7.8499985, 12.200001, 0.5, -0.6500015, 12.200001, 0.5, -2.1500015, 10.450001, 0.5, -2.1500015, 9.450001, 0.5, -0.6500015, 3.9500008, 0.5, 7.0999985, 8.700001, 0.5, 7.0999985, 8.450001, 0.5, 0.34999847, 9.700001, 0.5, -2.6500015, 1.7000008, 0.5, -4.9000015, 3.2000008, 0.5, 7.5999985, -3.2999992, 0.5, 8.599998, 2.9500008, 0.5, 8.599998, 10.950001, 1.75, 1.8499985, 10.950001, 1.75, 5.0999985, 11.700001, 1.75, 5.0999985, 11.700001, 1.75, 1.8499985, -3.5499992, 0.5, 9.599998, 3.2000008, 0.5, 9.599998, 12.450001, 0.5, 13.349998, 12.450001, 0.5, 10.099998, 3.9500008, 0.5, 10.099998, -4.299999, 0.5, 10.099998, -12.549999, 0.5, 13.349998, -12.549999, 0.5, 10.099998)
+polygons = [PackedInt32Array(2, 1, 0), PackedInt32Array(4, 3, 5), PackedInt32Array(5, 3, 6), PackedInt32Array(7, 9, 8), PackedInt32Array(10, 13, 0), PackedInt32Array(0, 13, 2), PackedInt32Array(2, 13, 12), PackedInt32Array(2, 12, 11), PackedInt32Array(13, 10, 9), PackedInt32Array(11, 17, 14), PackedInt32Array(14, 17, 15), PackedInt32Array(15, 17, 16), PackedInt32Array(13, 9, 7), PackedInt32Array(13, 7, 18), PackedInt32Array(18, 7, 5), PackedInt32Array(18, 5, 6), PackedInt32Array(12, 17, 11), PackedInt32Array(3, 19, 6), PackedInt32Array(21, 20, 22), PackedInt32Array(22, 20, 23), PackedInt32Array(25, 24, 26), PackedInt32Array(26, 24, 27), PackedInt32Array(23, 28, 22), PackedInt32Array(20, 26, 23), PackedInt32Array(23, 26, 27), PackedInt32Array(24, 29, 27), PackedInt32Array(23, 30, 28), PackedInt32Array(28, 30, 31), PackedInt32Array(33, 32, 34), PackedInt32Array(34, 32, 35), PackedInt32Array(31, 30, 32), PackedInt32Array(32, 30, 36), PackedInt32Array(32, 36, 35), PackedInt32Array(35, 36, 37), PackedInt32Array(39, 38, 40), PackedInt32Array(40, 38, 41), PackedInt32Array(44, 43, 42), PackedInt32Array(45, 40, 41), PackedInt32Array(41, 44, 45), PackedInt32Array(45, 44, 19), PackedInt32Array(19, 44, 6), PackedInt32Array(6, 44, 46), PackedInt32Array(47, 37, 42), PackedInt32Array(42, 37, 44), PackedInt32Array(44, 37, 46), PackedInt32Array(46, 37, 36), PackedInt32Array(48, 37, 49), PackedInt32Array(49, 37, 47), PackedInt32Array(53, 52, 50), PackedInt32Array(50, 52, 51), PackedInt32Array(49, 55, 48), PackedInt32Array(48, 55, 54), PackedInt32Array(58, 57, 56), PackedInt32Array(55, 58, 54), PackedInt32Array(54, 58, 59), PackedInt32Array(59, 58, 60), PackedInt32Array(60, 58, 56), PackedInt32Array(60, 61, 59)]
+geometry_source_geometry_mode = 2
+agent_radius = 1.2
+agent_max_climb = 0.0
+agent_max_slope = 20.0
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_07jrh"]
+size = Vector3(11.2, 2.2, 2.6000001)
+
+[node name="Main" type="Node3D"]
+script = ExtResource("1_grrqp")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+transform = Transform3D(0.99032724, -0.10035287, 0.095818296, 0.018451268, 0.7796933, 0.6258894, -0.13751857, -0.6180675, 0.7740031, -6.4905953, 6.927673, 16.07892)
+fov = 90.0
+script = ExtResource("1_07jrh")
+
+[node name="cenario" type="Node" parent="."]
+
+[node name="chao" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5.0000014)
+use_collision = true
+size = Vector3(27.4, 0.3, 39.100002)
+
+[node name="chao banheiro" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 9.2, 0, -28.3)
+use_collision = true
+size = Vector3(9, 0.3, 7.7000003)
+
+[node name="parede frente" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, -0.049998283, 1.6, 8.500002)
+use_collision = true
+size = Vector3(0.3, 4.2, 27.5)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="cenario/parede frente"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.119997025)
+operation = 2
+size = Vector3(1, 3, 9.1)
+
+[node name="parede esquerda" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -13.65, 1.6, -7.899999)
+use_collision = true
+size = Vector3(0.3, 4.2, 33.4)
+
+[node name="parede direita" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 13.650001, 1.6, -11.9)
+use_collision = true
+size = Vector3(0.3, 4.2, 41)
+
+[node name="parede fundo" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, 0.049997807, 1.6, -24.5)
+use_collision = true
+size = Vector3(0.3, 4.2, 27.4)
+
+[node name="CSGBox3D" type="CSGBox3D" parent="cenario/parede fundo"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 9.669997)
+operation = 2
+size = Vector3(1, 3, 3.6000001)
+
+[node name="parede esquerda banheiro2" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.800003, 1.5999999, -28.449999)
+use_collision = true
+size = Vector3(0.3, 4.2, 7.7000003)
+
+[node name="parede fundo banheiro" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 9.200004, 1.5999999, -32.249996)
+use_collision = true
+size = Vector3(0.3, 4.2, 8.900001)
+
+[node name="bloco invisivel" type="CSGBox3D" parent="cenario" groups=["navigation_mesh_source_group"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 5.8000026, 1.5999999, -28.449999)
+visible = false
+use_collision = true
+size = Vector3(1.9, 4.2, 7.7000003)
+
+[node name="cenario interativo" type="Node" parent="."]
+
+[node name="prateleira bebida" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_drink"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.25, 0.7500001, -19.83)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 4.5)
+material = SubResource("StandardMaterial3D_gt2a7")
+
+[node name="prateleira bebida2" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_drink"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -14.28)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 5.4)
+material = SubResource("StandardMaterial3D_gt2a7")
+
+[node name="prateleira bebida4" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_drink"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.049999, 0.7500001, -5.7299995)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 4.5)
+material = SubResource("StandardMaterial3D_gt2a7")
+
+[node name="prateleira comida" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_food"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.25, 0.7500001, -12.43)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 4.5)
+material = SubResource("StandardMaterial3D_reuu7")
+
+[node name="prateleira comida2" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_food"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.150001, 0.7500001, -12.43)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 4.5)
+material = SubResource("StandardMaterial3D_reuu7")
+
+[node name="prateleira comida4" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_food"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -20.630001)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 6.3)
+material = SubResource("StandardMaterial3D_reuu7")
+
+[node name="caixa" type="CSGBox3D" parent="cenario interativo" groups=["caixa", "navigation_mesh_source_group"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.400001, 0.7500001, 3.42)
+use_collision = true
+size = Vector3(3, 1.3000001, 5.4)
+material = SubResource("StandardMaterial3D_grrqp")
+
+[node name="prateleira produto" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_food"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.75, -8.53)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 4.5)
+material = SubResource("StandardMaterial3D_kls3s")
+
+[node name="prateleira produto2" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_food"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.1, 0.75, -19.23)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 4.5)
+material = SubResource("StandardMaterial3D_kls3s")
+
+[node name="prateleira produto3" type="CSGBox3D" parent="cenario interativo" groups=["navigation_mesh_source_group", "prateleira_food"]]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.2, 0.75, -5.63)
+use_collision = true
+size = Vector3(2.5, 1.3000001, 4.5)
+material = SubResource("StandardMaterial3D_kls3s")
+
+[node name="NavigationRegion3D" type="NavigationRegion3D" parent="."]
+navigation_mesh = SubResource("NavigationMesh_vi15o")
+
+[node name="clientmanager" type="Node" parent="."]
+script = ExtResource("1_vi15o")
+
+[node name="Timer" type="Timer" parent="clientmanager"]
+one_shot = true
+autostart = true
+
+[node name="Area3D" type="Area3D" parent="clientmanager"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 10.900001)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="clientmanager/Area3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.39999986, 1.3, -0.09999943)
+shape = SubResource("BoxShape3D_07jrh")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.9848078, 0.05939118, 0.16317591, -0.17364816, 0.33682406, 0.9254165, 7.1326456e-09, -0.9396926, 0.34202012, 25.6, 32.300003, 29.9)
+
+[node name="DirectionalLight3D2" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.9848078, 0.059391167, -0.16317591, 0.17364816, -0.33682412, 0.9254166, -7.1326447e-09, -0.9396926, -0.34202018, -35.261124, 38.551334, -41.8)
+
+[node name="HUD" type="CanvasLayer" parent="."]
+
+[node name="console_container" type="MarginContainer" parent="HUD"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 177.0
+grow_horizontal = 2
+size_flags_vertical = 0
+
+[node name="TextEdit" type="TextEdit" parent="HUD/console_container" groups=["console"]]
+layout_mode = 2
+editable = false
+shortcut_keys_enabled = false
+virtual_keyboard_enabled = false
+
+[node name="console_container2" type="MarginContainer" parent="HUD"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 619.0
+offset_top = 187.0
+offset_bottom = 487.0
+grow_horizontal = 2
+size_flags_vertical = 0
+
+[node name="worldstateDisplay" type="TextEdit" parent="HUD/console_container2" groups=["worldstate_display"]]
+layout_mode = 2
+editable = false
+shortcut_keys_enabled = false
+virtual_keyboard_enabled = false
+
+[node name="Node" type="Node" parent="."]
+
+[node name="food" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6, 1.9, -10.900001)
+
+[node name="food3" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6, 1.9, -13.900001)
+
+[node name="food4" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.6, 1.9, -12.500001)
+
+[node name="food5" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.700001, 1.9, -10.900001)
+
+[node name="food6" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.700001, 1.9, -13.900001)
+
+[node name="food7" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.700001, 1.9, -12.500001)
+
+[node name="food8" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.700001, 1.9, -10.900001)
+
+[node name="food9" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.700001, 1.9, -13.900001)
+
+[node name="food10" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.700001, 1.9, -12.500001)
+
+[node name="food11" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 1.9, -10.900001)
+
+[node name="food12" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 1.9, -13.900001)
+
+[node name="food13" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.6, 1.9, -12.500001)
+
+[node name="food20" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5000006, 1.9, -18.400002)
+
+[node name="food21" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5000006, 1.9, -21.400002)
+
+[node name="food22" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5000006, 1.9, -20)
+
+[node name="food23" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5999998, 1.9, -18.400002)
+
+[node name="food24" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5999998, 1.9, -21.400002)
+
+[node name="food25" parent="Node" instance=ExtResource("3_gt2a7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.5999998, 1.9, -20)
+
+[node name="drink" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 1.9, -12.200001)
+
+[node name="drink2" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.70000005, 1.9, -12.200001)
+
+[node name="drink3" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 1.9, -15.400002)
+
+[node name="drink4" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.70000005, 1.9, -15.400002)
+
+[node name="drink5" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6, 1.9, -13.9)
+
+[node name="drink6" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.70000005, 1.9, -13.9)
+
+[node name="drink7" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, 1.9, -4.1)
+
+[node name="drink8" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 1.9, -4.1)
+
+[node name="drink9" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, 1.9, -7.2999997)
+
+[node name="drink10" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 1.9, -7.2999997)
+
+[node name="drink11" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.8, 1.9, -5.7999997)
+
+[node name="drink12" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.5, 1.9, -5.7999997)
+
+[node name="drink19" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.599999, 1.9, -18.2)
+
+[node name="drink20" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.9, 1.9, -18.2)
+
+[node name="drink21" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.599999, 1.9, -21.4)
+
+[node name="drink22" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.9, 1.9, -21.4)
+
+[node name="drink23" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.599999, 1.9, -19.9)
+
+[node name="drink24" parent="Node" instance=ExtResource("4_reuu7")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.9, 1.9, -19.9)
+
+[node name="product" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.70000005, 1.9, -10.1)
+
+[node name="product2" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.70000005, 1.9, -8.5)
+
+[node name="product3" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.70000005, 1.9, -6.8999996)
+
+[node name="product4" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6999999, 1.9, -10.1)
+
+[node name="product5" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6999999, 1.9, -8.5)
+
+[node name="product6" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.6999999, 1.9, -6.8999996)
+
+[node name="product7" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4, 1.9, -20.8)
+
+[node name="product8" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4, 1.9, -19.2)
+
+[node name="product9" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 11.4, 1.9, -17.599998)
+
+[node name="product10" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.799999, 1.9, -20.8)
+
+[node name="product11" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.799999, 1.9, -19.2)
+
+[node name="product12" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.799999, 1.9, -17.599998)
+
+[node name="product13" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.9, 1.9, -7.3)
+
+[node name="product14" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.9, 1.9, -5.7)
+
+[node name="product15" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.9, 1.9, -4.0999994)
+
+[node name="product16" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 1.9, -7.3)
+
+[node name="product17" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 1.9, -5.7)
+
+[node name="product18" parent="Node" instance=ExtResource("6_kls3s")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 1.9, -4.0999994)
+
+[connection signal="timeout" from="clientmanager/Timer" to="clientmanager" method="_on_timer_timeout"]

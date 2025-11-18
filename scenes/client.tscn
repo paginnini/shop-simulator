@@ -1,0 +1,138 @@
+[gd_scene load_steps=11 format=3 uid="uid://csnaauwit8iyh"]
+
+[ext_resource type="Script" uid="uid://dp8y5drsg1g0w" path="res://scripts/client.gd" id="1_5f806"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7gnwo"]
+height = 1.7640626
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_5f806"]
+
+[sub_resource type="ViewportTexture" id="ViewportTexture_5f806"]
+viewport_path = NodePath("SubViewportContainer/SubViewport")
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_5f806"]
+bg_color = Color(1, 0.5568628, 0.49411765, 0.16470589)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_1t5vp"]
+bg_color = Color(1, 0.21568628, 0.2, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_4tr0r"]
+bg_color = Color(0.49411765, 0.5568628, 1, 0.16470589)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r26j7"]
+bg_color = Color(0.2, 0.21568628, 1, 1)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_t0ykn"]
+bg_color = Color(0, 1, 0, 0.17254902)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_da3od"]
+bg_color = Color(0.20392157, 1, 0.23137255, 1)
+
+[node name="client" type="CharacterBody3D"]
+collision_layer = 2
+script = ExtResource("1_5f806")
+
+[node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
+debug_enabled = true
+
+[node name="Label3D" type="Label3D" parent="."]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+shape = SubResource("CapsuleShape3D_7gnwo")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.19999999, 0)
+mesh = SubResource("CapsuleMesh_5f806")
+
+[node name="labels" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+
+[node name="label_money" type="Label3D" parent="labels"]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0.3, 0)
+billboard = 1
+text = "hello"
+horizontal_alignment = 0
+
+[node name="Sprite3D" type="Sprite3D" parent="labels"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.30000007, 0)
+billboard = 1
+texture = SubResource("ViewportTexture_5f806")
+
+[node name="SubViewportContainer" type="SubViewportContainer" parent="."]
+offset_left = -753.0
+offset_top = -106.0
+offset_right = -55.0
+offset_bottom = 317.0
+
+[node name="SubViewport" type="SubViewport" parent="SubViewportContainer"]
+transparent_bg = true
+handle_input_locally = false
+render_target_update_mode = 4
+
+[node name="ProgressBar" type="ProgressBar" parent="SubViewportContainer/SubViewport"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -195.0
+offset_top = 128.0
+offset_right = 61.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 4.712389
+size_flags_horizontal = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_5f806")
+theme_override_styles/fill = SubResource("StyleBoxFlat_1t5vp")
+value = 50.0
+allow_greater = true
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[node name="ProgressBar2" type="ProgressBar" parent="SubViewportContainer/SubViewport"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -155.0
+offset_top = 129.0
+offset_right = 101.0
+offset_bottom = 161.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 4.712389
+size_flags_horizontal = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_4tr0r")
+theme_override_styles/fill = SubResource("StyleBoxFlat_r26j7")
+value = 50.0
+allow_greater = true
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[node name="ProgressBar3" type="ProgressBar" parent="SubViewportContainer/SubViewport"]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -112.0
+offset_top = 131.0
+offset_right = 144.0
+offset_bottom = 163.0
+grow_horizontal = 2
+grow_vertical = 2
+rotation = 4.712389
+size_flags_horizontal = 4
+theme_override_styles/background = SubResource("StyleBoxFlat_t0ykn")
+theme_override_styles/fill = SubResource("StyleBoxFlat_da3od")
+value = 50.0
+allow_greater = true
+show_percentage = false
+metadata/_edit_use_anchors_ = true
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 2.0
+one_shot = true

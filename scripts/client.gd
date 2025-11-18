@@ -1,0 +1,86 @@
+extends CharacterBody3D
+
+@onready var navigation_agent_3d: NavigationAgent3D = $NavigationAgent3D
+
+const SPEED = 5.0
+const JUMP_VELOCITY = 4.5
+
+var going_already = false
+var is_attacking = false
+
+var money := 0.0
+var bill := 0.0
+
+var hunger := 0.0
+var thirst := 0.0
+var hygiene := 0.0
+
+var food_limit := 500.0
+var drink_limit := 500.0
+var product_limit := 500.0
+
+var do_distance := 5.0
+
+var itens_list = []
+
+
+#TIRAR DEPOIS
+#func _unhandled_input(event: InputEvent) -> void:
+	#if event.is_action_pressed("enter"):
+	#	var random_position := Vector3.ZERO
+	#	random_position.x = randf_range(-20.0, 10.0)
+	#	random_position.z = randf_range(-12.0, 12.0)
+	#	navigation_agent_3d.set_target_position(random_position)
+
+func _ready():
+	#define variaveis aleatorias para esse npc
+	money = randf_range(5000.0, 10000.0)
+	food_limit = randf_range(100.0, 500.0)
+	drink_limit = randf_range(100.0, 500.0)
+	product_limit = randf_range(100.0, 500.0)
+	
+	#hunger = food_limit
+	
+	$SubViewportContainer/SubViewport/ProgressBar.max_value = food_limit
+	$SubViewportContainer/SubViewport/ProgressBar2.max_value = drink_limit
+	$SubViewportContainer/SubViewport/ProgressBar3.max_value = product_limit
+	
+	var agent = GoapAgent.new()
+	agent.init(self, [
+		PickItensGoal.new(),
+		LeaveGoal.new(),
+		WatchTVGoal.new(),
+		UseWCGoal.new()
+	])
+	add_child(agent)
+
+
+
+func _physics_process(delta: float) -> void:
+	$labels/label_money.text = "Nutri: %.2f\nHydr: %.2f\nHygie: %.2f\nBill: %.2f\nMoney: %.2f" % [food_limit, drink_limit,product_limit, bill, money]
+	$SubViewportContainer/SubViewport/ProgressBar.value = hunger
+	$SubViewportContainer/SubViewport/ProgressBar2.value = thirst
+	$SubViewportContainer/SubViewport/ProgressBar3.value = hygiene
+	# Add the gravity.
+	if not is_on_floor():
+		velocity += get_gravity() * delta
+	
+	var destination = navigation_agent_3d.get_next_path_position()
+	var local_destination = destination - global_position
+	var direction = local_destination.normalized()
+	
+	velocity = direction * SPEED
+	move_and_slide()
+	update_worldstate()
+
+
+func update_worldstate() -> void:
+	#WorldState.
+	pass
+
+
+func vanish() -> void:
+	for i in itens_list:
+		if i: i.queue_free()
+	itens_list = []
+	#self.queue_free()
