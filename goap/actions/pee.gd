@@ -1,30 +1,30 @@
 extends GoapAction
 
-class_name GoToWCAction
+class_name PeeAction
 
 #var going_already = false
 
-func get_clazz(): return "GoToWCAction"
+func get_clazz(): return "PeeAction"
 
 func is_valid() -> bool:
 	return true
 
 
 func get_cost(_blackboard = null) -> float:
-	return 0
+	return _blackboard["position"].distance_to(WorldState.wc_position)
 
-func get_preconditions(actor) -> Dictionary:
+func get_preconditions(actor = null, blackboard = null) -> Dictionary:
 	return {}
 
-func get_effects(actor) -> Dictionary:
+func get_effects(actor, blackboard = null) -> Dictionary:
 	return {
-		str(actor)+"used_wc": true
+		"used_wc": true
 	}
 
 
 func perform(actor, _delta, agent) -> bool:
 	if WorldState.wc_position.distance_to(actor.position) < 1.0:
-		WorldState.set_state(str(actor)+"used_wc", true)
+		actor._state.set("used_wc", true)
 		actor.going_already = false
 		return true
 	else:

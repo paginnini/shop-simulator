@@ -10,10 +10,10 @@ var _tv
 # generic will always be available
 func is_valid(actor) -> bool:
 	if _tv.position.distance_to(actor.position) < 10:
-		return true
+		return false ###################################################MUDAR PRA TRUE DEPOIS
 	return false
 
-# generic has lower priority compared to other goals
+
 func priority(actor) -> int:
 	return _tv.value
 	
@@ -25,5 +25,5 @@ func _init() -> void:
 
 func get_desired_state(actor) -> Dictionary:
 	return {
-		str(actor)+"watching": true
+		"watching": true
 	}

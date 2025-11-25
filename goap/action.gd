@@ -33,7 +33,7 @@ func get_cost(_blackboard = null) -> float:
 #   "has_wood": true
 # }
 #
-func get_preconditions(actor) -> Dictionary:
+func get_preconditions(actor, blackboard) -> Dictionary:
 	return {}
 
 

@@ -37,7 +37,7 @@ mesh = SubResource("CapsuleMesh_5f806")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
 
 [node name="label_money" type="Label3D" parent="labels"]
-transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0.3, 0)
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 0, 0.3, 0)
 billboard = 1
 text = "hello"
 horizontal_alignment = 0
@@ -59,15 +59,15 @@ handle_input_locally = false
 render_target_update_mode = 4
 
 [node name="ProgressBar" type="ProgressBar" parent="SubViewportContainer/SubViewport"]
-anchors_preset = -1
+anchors_preset = 8
 anchor_left = 0.5
-anchor_top = 0.52768064
-anchor_right = 0.54152095
-anchor_bottom = 0.52768064
-offset_left = -59.0
-offset_top = 131.0
-offset_right = 197.0
-offset_bottom = 163.0
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -195.0
+offset_top = 128.0
+offset_right = 61.0
+offset_bottom = 160.0
 grow_horizontal = 2
 grow_vertical = 2
 rotation = 4.712389

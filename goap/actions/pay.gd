@@ -16,27 +16,24 @@ func _init() -> void:
 	_caixa = WorldState.get_elements("caixa")[0]
 
 func get_cost(_blackboard = null) -> float:
-	return _blackboard.actor.bill
+	print("-----------------------------------------------------TESTE GET_COST:", _blackboard["bill"])
+	return _blackboard["bill"]
 
 
-func get_preconditions(actor) -> Dictionary:
+func get_preconditions(actor, blackboard = null) -> Dictionary:
+	return {}
+
+
+func get_effects(actor, blackboard = null) -> Dictionary:
 	return {
-		str(actor)+"hunger_limit": true,
-		str(actor)+"thirst_limit": true,
-		str(actor)+"hygiene_limit": true
-		
-	}
-
-
-func get_effects(actor) -> Dictionary:
-	return {
-		str(actor)+"payed": true
+		"payed": true,
+		"bill": 0.0
 	}
 
 
 func perform(actor, _delta, agent) -> bool:
 	if actor.bill == 0.0:
-		WorldState.set_state(str(actor)+"payed", true)
+		actor._state.set("payed", true)
 		actor.going_already = false
 		return true
 	
@@ -45,7 +42,7 @@ func perform(actor, _delta, agent) -> bool:
 		if actor.bill <= actor.money:
 			actor.money -= actor.bill
 			actor.bill = 0.0
-			WorldState.set_state(str(actor)+"payed", true)
+			actor._state.set("payed", true)
 			actor.going_already = false
 			return true
 		else:

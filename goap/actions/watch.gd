@@ -19,13 +19,13 @@ func get_cost(_blackboard = null) -> float:
 	return 0
 
 
-func get_preconditions(actor) -> Dictionary:
+func get_preconditions(actor = null, blackboard = null) -> Dictionary:
 	return {}
 
 
-func get_effects(actor) -> Dictionary:
+func get_effects(actor, blackboard = null) -> Dictionary:
 	return {
-		str(actor)+"watching": true
+		"watching": true
 	}
 
 
@@ -33,7 +33,7 @@ func perform(actor, _delta, agent) -> bool:
 	#print("perform ação watch")
 	if _tv.position.distance_to(actor.position) < actor.do_distance:
 		#print("ASSISTINDO TV ---------------------------------------------------------------------------------")
-		WorldState.set_state(str(actor)+"watching", true)
+		actor._state.set("watching", true)
 		actor.going_already = false
 		actor.navigation_agent_3d.set_target_position(actor.position)
 		return true

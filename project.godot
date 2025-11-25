@@ -19,12 +19,6 @@ config/icon="res://icon.svg"
 
 WorldState="*res://scripts/world_state.gd"
 
-[global_group]
-
-food=""
-drink=""
-product=""
-
 [input]
 
 move_forward={

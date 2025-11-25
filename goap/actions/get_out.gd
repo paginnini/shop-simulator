@@ -1,10 +1,10 @@
 extends GoapAction
 
-class_name GoToOutAction
+class_name GetOutAction
 
 #var going_already = false
 
-func get_clazz(): return "GoToOutAction"
+func get_clazz(): return "GetOutAction"
 
 func is_valid() -> bool:
 	return true
@@ -13,20 +13,20 @@ func is_valid() -> bool:
 func get_cost(_blackboard = null) -> float:
 	return 0
 
-func get_preconditions(actor) -> Dictionary:
+func get_preconditions(actor, blackboard = null) -> Dictionary:
 	return {
-		str(actor)+"payed": true
+		"bill": 0.0
 	}
 
-func get_effects(actor) -> Dictionary:
+func get_effects(actor, blackboard = null) -> Dictionary:
 	return {
-		str(actor)+"out": true
+		"out": true
 	}
 
 
 func perform(actor, _delta, agent) -> bool:
 	if WorldState.out_position.distance_to(actor.position) < 1.0:
-		WorldState.set_state(str(actor)+"out", true)
+		actor._state.set("out", true)
 		actor.going_already = false
 		actor.vanish()
 		return true

@@ -11,10 +11,10 @@ func is_valid(actor) -> bool:
 
 # generic has lower priority compared to other goals
 func priority(actor) -> int:
-	return 3
+	return 0
 
 func get_desired_state(actor) -> Dictionary:
 	return {
-		str(actor)+"payed": true,
-		str(actor)+"out": true
+		"bill": 0.0,
+		"out": true
 	}

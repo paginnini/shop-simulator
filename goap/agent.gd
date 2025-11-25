@@ -17,7 +17,7 @@ var _current_plan_step = 0
 
 var _actor
 
-var _action_planner =  GoapActionPlanner.new()
+var _action_planner = GoapActionPlanner.new()
 
 var a := false
 var b := false
@@ -39,14 +39,15 @@ func _process(delta):
 			"position": _actor.position,
 			"actor": _actor
 			}
-		WorldState.set_state(str(_actor)+"watching", false)
-		for s in WorldState._state:
-			blackboard[s] = WorldState._state[s]
+		_actor.set("watching", false)
+		#for s in WorldState._state:
+		#	blackboard[s] = WorldState._state[s]
 
 		_current_goal = goal
 		_current_plan = _action_planner.get_plan(_current_goal, blackboard)
 		_current_plan_step = 0
 		_actor.going_already = false
+		print("current goal: ", _current_goal.get_clazz())
 	else:
 		_follow_plan(_current_plan, delta)
 
@@ -66,53 +67,38 @@ func init(actor, goals: Array):
 	# Set the rest to false
 	for i in range(amount_to_enable, keys.size()):
 		self.set(keys[i], false)
-	#print("KEYS: ", keys)
-	#print(a, b, c)
-	if a: actor.hunger = actor.food_limit
-	if b: actor.thirst = actor.drink_limit
-	if c: actor.hygiene = actor.product_limit
-	#print("a: ", a, " | actor.hunger: ", actor.hunger, " | actor.food_limit: ", actor.food_limit)
-	#print("b: ", b, " | actor.thirst: ", actor.thirst, " | actor.drink_limit: ", actor.drink_limit)
-	#print("c: ", c, " | actor.hygiene: ", actor.hygiene, " | actor.product_limit: ", actor.product_limit)
-	WorldState.set_state(str(actor)+"hunger", actor.hunger)
-	WorldState.set_state(str(actor)+"thirst", actor.thirst)
-	WorldState.set_state(str(actor)+"hygiene", actor.hygiene)
-	WorldState.set_state(str(actor)+"hunger_limit", a)
-	WorldState.set_state(str(actor)+"thirst_limit", b)
-	WorldState.set_state(str(actor)+"hygiene_limit", c)
-	WorldState.set_state(str(actor)+"payed", false)
-	WorldState.set_state(str(actor)+"out", false)
 	
 	var actions = [
 		PayAction.new(),
-		GoToOutAction.new(),
+		GetOutAction.new(),
 		WatchAction.new(),
-		GoToWCAction.new()
+		PeeAction.new(),
 	]
-	
-	for item in WorldState.get_elements("food"):
-		if not item.client_holding or a:
-			actions.push_back(GoToFoodAction.new(item))
-	for item in WorldState.get_elements("drink"):
-		if not item.client_holding or b:
-			actions.push_back(GoToDrinkAction.new(item))
-	for item in WorldState.get_elements("product"):
-		if not item.client_holding or c:
-			actions.push_back(GoToProductAction.new(item))
+	for item in WorldState.get_elements("item"):
+		if not item.client_holding:
+			actions.push_back(PickItemAction.new(item))
+	#print(actions)
 	
 	##print("acoes do agente: ")
-	#for i in actions:
-	#	print("   ", i.get_clazz())
+	for i in actions:
+		print("   ", i.get_clazz())
 	_action_planner.set_actions(actions)
 	
+	# ESCOLHE TIPOS DE ITEM QUE QUER COMPRAR
 	print("\n",WorldState.item_types)
 	var preference_itens = []
 	WorldState.item_types.shuffle()
+	@warning_ignore("integer_division")
 	for i in randi_range(1, WorldState.item_types.size()/2):
 		preference_itens.append(WorldState.item_types[i])
 	print(WorldState.item_types)
 	print(preference_itens)
 	
+	#DEFINE PREFERENCIA ENTRE AÇÕES
+	for i in _actor.preference:
+		print(i)
+		_actor.preference.set(i, float(randi_range(1, 9))/10.0)
+	print(_actor.preference)
 
 
 #d
@@ -120,11 +106,14 @@ func init(actor, goals: Array):
 #
 func _get_best_goal():
 	var highest_priority
-
+	
 	for goal in _goals:
+		#print(goal.get_clazz(), " priority: ", goal.priority(_actor), "  | is valid: ", goal.is_valid(_actor))
+		@warning_ignore("unassigned_variable")
 		if goal.is_valid(_actor) and (highest_priority == null or goal.priority(_actor) > highest_priority.priority(_actor)):
 			highest_priority = goal
-
+	
+	#print("best goal: ", highest_priority.get_clazz())
 	return highest_priority
 
 
@@ -147,5 +136,5 @@ func _follow_plan(plan, delta):
 	#print(_current_plan_step)
 	#print(plan.size())
 	if is_step_complete and _current_plan_step < plan.size() - 1:
-		print("teste")
+		print("completou action")
 		_current_plan_step += 1
