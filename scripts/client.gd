@@ -5,23 +5,47 @@ extends CharacterBody3D
 const SPEED = 5.0
 const JUMP_VELOCITY = 4.5
 
+var ud_goap = false
+var agent
+
 var going_already = false
 var is_attacking = false
 
-var money := 0.0
+var money := 200.0
 var bill := 0.0
 
-var hunger := 0.0
-var thirst := 0.0
-var hygiene := 0.0
+var bladder := 0.0
+var bladder_limit := 100.0
 
-var food_limit := 500.0
-var drink_limit := 500.0
-var product_limit := 500.0
+var satisfaction := 0.0
+var satisfaction_limit := 100.0
 
 var do_distance := 5.0
 
 var itens_list = []
+var preference = {
+	"refrigerante": 0.5,
+	"suco": 0.5,
+	"agua": 0.5,
+	"doce": 0.5,
+	"carne": 0.5,
+	"massa": 0.5
+}
+
+var _state = {
+	"satisfaction": 0.0,
+	"satisfaction_limit": satisfaction_limit,
+	"done_shopping": false,
+	"money": money,
+	"bill": bill,
+	"payed": false,
+	"bladder": bladder,
+	"bladder_limit": bladder_limit,
+	"used_wc": false,
+	"watching": false,
+	"out": false,
+	"is_in_debt": false
+}
 
 
 #TIRAR DEPOIS
@@ -34,33 +58,41 @@ var itens_list = []
 
 func _ready():
 	#define variaveis aleatorias para esse npc
-	money = randf_range(5000.0, 10000.0)
-	food_limit = randf_range(100.0, 500.0)
-	drink_limit = randf_range(100.0, 500.0)
-	product_limit = randf_range(100.0, 500.0)
+	if WorldState.random:
+		_state["money"] = randf_range(100.0, 400.0)
+		_state["bladder"] = randf_range(0.0, 70.0)
+		for key in preference.keys():
+			preference[key] = randi_range(0, 10) / 10.0      # convert to 0.0–1.0 in 0.1 steps
+	else:
+		_state["money"] = WorldState.money_rng.randf_range(40.0, 50.0)
+		_state["bladder"] = WorldState.bladder_rng.randf_range(0.0, 70.0)
+		for key in preference.keys():
+			preference[key] = WorldState.preference_rng.randi_range(2, 8) / 10.0      # convert to 0.0–1.0 in 0.1 steps
+	print_npc_variables()
 	
-	#hunger = food_limit
+	$SubViewportContainer/SubViewport/ProgressBar.max_value = satisfaction_limit
+	$SubViewportContainer/SubViewport/ProgressBar2.max_value = bladder_limit
 	
-	$SubViewportContainer/SubViewport/ProgressBar.max_value = food_limit
-	$SubViewportContainer/SubViewport/ProgressBar2.max_value = drink_limit
-	$SubViewportContainer/SubViewport/ProgressBar3.max_value = product_limit
 	
-	var agent = GoapAgent.new()
+	agent = GoapAgent.new()
 	agent.init(self, [
 		PickItensGoal.new(),
 		LeaveGoal.new(),
 		WatchTVGoal.new(),
 		UseWCGoal.new()
 	])
+	apply_type()
 	add_child(agent)
 
 
 
 func _physics_process(delta: float) -> void:
-	$labels/label_money.text = "Nutri: %.2f\nHydr: %.2f\nHygie: %.2f\nBill: %.2f\nMoney: %.2f" % [food_limit, drink_limit,product_limit, bill, money]
-	$SubViewportContainer/SubViewport/ProgressBar.value = hunger
-	$SubViewportContainer/SubViewport/ProgressBar2.value = thirst
-	$SubViewportContainer/SubViewport/ProgressBar3.value = hygiene
+	var text := "Goal: %s\n" % agent._current_goal.get_clazz() if agent._current_goal else ""
+	for key in _state.keys():
+		text += "%s: %s\n" % [key, str(_state[key])]
+	$labels/label_money.text = text
+	$SubViewportContainer/SubViewport/ProgressBar.value = _state["satisfaction"]
+	$SubViewportContainer/SubViewport/ProgressBar2.value =_state["bladder"]
 	# Add the gravity.
 	if not is_on_floor():
 		velocity += get_gravity() * delta
@@ -84,3 +116,22 @@ func vanish() -> void:
 		if i: i.queue_free()
 	itens_list = []
 	#self.queue_free()
+
+
+func print_npc_variables():
+	print("------------------------------------------------------------------NEW NPC------------------------------------------------------------------")
+	print("money: ", _state["money"])
+	print("bladder: ", _state["bladder"])
+	print("money: ", _state["money"])
+	for key in preference.keys():
+		print(key,": ", preference[key])
+	print("------------------------------------------------------------------NEW NPC------------------------------------------------------------------")
+
+func apply_type():
+	var mes
+	if ud_goap:
+		$MeshInstance3D.material_override = load("res://assets/udgoap.tres")
+		mes = load("res://assets/client_udgoap.tres")
+	else:
+		mes = load("res://assets/client_goap.tres")
+	$MeshInstance3D.mesh = mes

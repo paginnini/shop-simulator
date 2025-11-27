@@ -1,0 +1,15 @@
+[gd_scene load_steps=2 format=3 uid="uid://br4vk7p51sf5x"]
+
+[ext_resource type="Script" uid="uid://b7soqausihuya" path="res://scripts/item.gd" id="1_4gq7n"]
+
+[node name="item" type="Node3D" groups=["item"]]
+script = ExtResource("1_4gq7n")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="."]
+
+[node name="labels" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.89999986, 0)
+
+[node name="label_info" type="Label3D" parent="labels"]
+transform = Transform3D(1, 0, 0, 0, 0.76604444, 0.6427876, 0, -0.6427876, 0.76604444, 0, 0.3, 0)
+billboard = 1

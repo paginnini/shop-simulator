@@ -9,43 +9,46 @@ var _caixa
 func get_clazz(): return "PayAction"
 
 
-func is_valid() -> bool:
+func is_valid(blackboard = null) -> bool:
 	return true
 
 func _init() -> void:
 	_caixa = WorldState.get_elements("caixa")[0]
 
 func get_cost(_blackboard = null) -> float:
-	return _blackboard.actor.bill
+	if _blackboard["actor"].ud_goap:
+		return 0.0
+	else:
+		return WorldState.wc_position.distance_to(_blackboard["position"]) + _blackboard["bill"]
 
 
-func get_preconditions(actor) -> Dictionary:
+func get_preconditions(blackboard = null) -> Dictionary:
 	return {
-		str(actor)+"hunger_limit": true,
-		str(actor)+"thirst_limit": true,
-		str(actor)+"hygiene_limit": true
+		"done_shopping": true,
 		
 	}
 
 
-func get_effects(actor) -> Dictionary:
+func get_effects(blackboard = null) -> Dictionary:
 	return {
-		str(actor)+"payed": true
+		"payed": true,
+		"bill": 0.0,
+		"position": _caixa.position
 	}
 
 
 func perform(actor, _delta, agent) -> bool:
-	if actor.bill == 0.0:
-		WorldState.set_state(str(actor)+"payed", true)
+	if actor._state["bill"] == 0.0:
+		actor._state.set("payed", true)
 		actor.going_already = false
 		return true
 	
-	if _caixa.position.distance_to(actor.position) < actor.do_distance:
+	if _caixa.position.distance_to(actor.position) <= actor.do_distance:
 		#print("CHEGOU NO CAIXA ---------------------------------------------------------------------------------")
-		if actor.bill <= actor.money:
-			actor.money -= actor.bill
-			actor.bill = 0.0
-			WorldState.set_state(str(actor)+"payed", true)
+		if actor._state["bill"] <= actor._state["money"]:
+			actor._state["money"] -= actor._state["bill"]
+			actor._state.set("bill", 0.0)
+			actor._state.set("payed", true)
 			actor.going_already = false
 			return true
 		else:

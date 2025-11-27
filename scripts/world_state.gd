@@ -7,7 +7,17 @@ var _state = {
 var out_position := Vector3(0.0, 0.0, 10.9)
 var wc_position := Vector3(9.2, 0.0, -28.3)
 
-var random := true
+var random := false
+
+var base_seed = hash("3.14159265359")  # string → numeric seed
+#var base_seed = hash("cellbat")
+var money_rng
+var bladder_rng
+var preference_rng
+var item_type_rng
+var item_cost_rng
+var item_satisfaction_rng
+var item_hydration_rng
 
 var item_types = ["refrigerante",
 				"suco",
@@ -16,6 +26,22 @@ var item_types = ["refrigerante",
 				"carne",
 				"massa"
 				]
+
+func _init():
+	money_rng = RandomNumberGenerator.new()
+	money_rng.seed = hash("money" + str(base_seed))
+	bladder_rng = RandomNumberGenerator.new()
+	bladder_rng.seed = hash("bladder" + str(base_seed))
+	preference_rng = RandomNumberGenerator.new()
+	preference_rng.seed = hash("preference" + str(base_seed))
+	item_type_rng = RandomNumberGenerator.new()
+	item_type_rng.seed = hash("type" + str(base_seed))
+	item_cost_rng = RandomNumberGenerator.new()
+	item_cost_rng.seed = hash("item_cost" + str(base_seed))
+	item_satisfaction_rng = RandomNumberGenerator.new()
+	item_satisfaction_rng.seed = hash("item_satisfaction" + str(base_seed))
+	item_hydration_rng = RandomNumberGenerator.new()
+	item_hydration_rng.seed = hash("item_hydration" + str(base_seed))
 
 func get_state(state_name, default = null):
 	return _state.get(state_name, default)

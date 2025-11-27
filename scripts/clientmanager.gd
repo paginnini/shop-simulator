@@ -17,20 +17,14 @@ func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("enter"):
 		#print('cria cliente')
 		var new_client = client_scene.instantiate()
-		if WorldState.random:
-			new_client.position = get_random_point_in_area(spawn_area)
-		else:
-			new_client.position = Vector3(0.0, 2.0, 10.0)
+		new_client.position = Vector3(0.0, 2.0, 10.0)
 		
 		add_child(new_client)
 
 func _on_timer_timeout() -> void:
 	#print('cria cliente')
 	var new_client = client_scene.instantiate()
-	if WorldState.random:
-		new_client.position = get_random_point_in_area(spawn_area)
-	else:
-		new_client.position = Vector3(0.0, 2.0, 10.0)
+	new_client.position = Vector3(0.0, 2.0, 10.0)
 
 	add_child(new_client)
 	

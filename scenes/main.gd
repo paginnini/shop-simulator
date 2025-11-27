@@ -10,4 +10,3 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	WorldState.state_display_update()
 	pass
-	#print(WorldState.get_elements("food").size())

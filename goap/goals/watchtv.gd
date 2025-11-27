@@ -9,6 +9,7 @@ var _tv
 
 # generic will always be available
 func is_valid(actor) -> bool:
+	return false
 	if _tv.position.distance_to(actor.position) < 10:
 		return true
 	return false
@@ -25,5 +26,5 @@ func _init() -> void:
 
 func get_desired_state(actor) -> Dictionary:
 	return {
-		str(actor)+"watching": true
+		"watching": true
 	}

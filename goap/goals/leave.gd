@@ -15,6 +15,6 @@ func priority(actor) -> int:
 
 func get_desired_state(actor) -> Dictionary:
 	return {
-		str(actor)+"payed": true,
-		str(actor)+"out": true
+		#"payed": true,
+		"out": true
 	}
