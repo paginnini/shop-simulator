@@ -18,11 +18,16 @@ config/icon="res://icon.svg"
 [autoload]
 
 WorldState="*res://scripts/world_state.gd"
+GdPAIAutoload="*res://addons/GdPlanningAI/gdpai_autoload.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/GdPlanningAI/plugin.cfg")
 
 [global_group]
 

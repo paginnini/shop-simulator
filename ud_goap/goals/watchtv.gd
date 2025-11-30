@@ -1,13 +1,15 @@
-extends GoapGoal
+extends UDGoapGoal
 
 
-class_name WatchTVGoal
+class_name UDWatchTVGoal
 
-func get_clazz(): return "WatchTVGoal"
+func get_clazz(): return "UDWatchTVGoal"
 
 var _tv
 
+# generic will always be available
 func is_valid(actor) -> bool:
+	return false
 	if _tv.position.distance_to(actor.position) < 10:
 		return true
 	return false
@@ -15,12 +17,14 @@ func is_valid(actor) -> bool:
 # generic has lower priority compared to other goals
 func priority(actor) -> int:
 	return _tv.value
+	
+	
 
 func _init() -> void:
 	_tv = WorldState.get_elements("tv")[0]
 
 
-func get_desired_state() -> Dictionary:
+func get_desired_state(actor) -> Dictionary:
 	return {
 		"watching": true
 	}

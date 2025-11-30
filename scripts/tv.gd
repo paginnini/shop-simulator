@@ -3,14 +3,27 @@ extends CSGBox3D
 var value := 6
 var direction := 1  # +1 = going up, -1 = going down
 
+var outline
+
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
-	pass # Replace with function body.
+	#outline = $".".duplicate()
+	#outline.material_override = preload("res://OutlineMaterial.tres")
+	#outline.scale *= 1.3
+	#outline.visible = false
+	#add_child(outline)
+	pass
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta: float) -> void:
 	pass
+
+func highlight():
+	outline.visible = true
+
+func unhighlight():
+	outline.visible = false
 
 
 func _on_timer_timeout() -> void:

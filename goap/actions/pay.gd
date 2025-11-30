@@ -9,52 +9,46 @@ var _caixa
 func get_clazz(): return "PayAction"
 
 
-func is_valid(blackboard = null) -> bool:
+func is_valid(actor = null) -> bool:
 	return true
+	return actor._goap_state["done_shopping"]
 
 func _init() -> void:
 	_caixa = WorldState.get_elements("caixa")[0]
 
 func get_cost(_blackboard = null) -> float:
-	if _blackboard["actor"].ud_goap:
-		return 0.0
-	else:
-		return WorldState.wc_position.distance_to(_blackboard["position"]) + _blackboard["bill"]
+	return _blackboard["actor"].current_bill
 
 
-func get_preconditions(blackboard = null) -> Dictionary:
+func get_preconditions() -> Dictionary:
 	return {
 		"done_shopping": true,
-		
-	}
-
-
-func get_effects(blackboard = null) -> Dictionary:
-	return {
-		"payed": true,
-		"bill": 0.0,
 		"position": _caixa.position
 	}
 
 
-func perform(actor, _delta, agent) -> bool:
-	if actor._state["bill"] == 0.0:
-		actor._state.set("payed", true)
+func get_effects() -> Dictionary:
+	return {
+		"payed": true,
+		#"bill": 0.0,
+	}
+
+
+func perform(actor, _delta) -> bool:
+	if actor.current_bill == 0.0:
+		print(str(actor) + " NAO PRECISA PAGAR")
+		actor._goap_state.set("payed", true)
 		actor.going_already = false
 		return true
 	
-	if _caixa.position.distance_to(actor.position) <= actor.do_distance:
-		#print("CHEGOU NO CAIXA ---------------------------------------------------------------------------------")
-		if actor._state["bill"] <= actor._state["money"]:
-			actor._state["money"] -= actor._state["bill"]
-			actor._state.set("bill", 0.0)
-			actor._state.set("payed", true)
-			actor.going_already = false
-			return true
-		else:
-			print("ERRO: BILL FICOU MAIOR QUE O DINHEIRO DO CARA")
+	#print("CHEGOU NO CAIXA ---------------------------------------------------------------------------------")
+	if actor.current_bill <= actor.current_money:
+		print(str(actor) + " PAGOU")
+		actor.current_money -= actor.current_bill
+		actor.current_bill = 0.0
+		actor._goap_state.set("payed", true)
+		actor.going_already = false
+		return true
 	else:
-		if not actor.going_already:
-			actor.navigation_agent_3d.set_target_position(_caixa.position)
-			actor.going_already = true
-	return false
+		print(str(actor) + " ERRO: BILL FICOU MAIOR QUE O DINHEIRO DO CARA")
+		return false

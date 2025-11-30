@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://b7soqausihuya" path="res://scripts/item.gd" id="1_4gq7n"]
 
-[node name="item" type="Node3D" groups=["item"]]
+[node name="item" type="Node3D" groups=["item", "smart"]]
 script = ExtResource("1_4gq7n")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

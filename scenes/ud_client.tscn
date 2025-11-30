@@ -1,10 +1,11 @@
-[gd_scene load_steps=9 format=3 uid="uid://csnaauwit8iyh"]
+[gd_scene load_steps=10 format=3 uid="uid://bwb1pnb3meivv"]
 
-[ext_resource type="Script" uid="uid://dp8y5drsg1g0w" path="res://scripts/client.gd" id="1_5f806"]
-[ext_resource type="CapsuleMesh" uid="uid://co7c2fy4anmyw" path="res://assets/client_goap.tres" id="2_1t5vp"]
+[ext_resource type="Script" uid="uid://og1llflv34co" path="res://ud_scripts/ud_client.gd" id="1_4j22d"]
+[ext_resource type="CapsuleMesh" uid="uid://otuh0h3672ma" path="res://assets/client_udgoap.tres" id="2_17uym"]
+[ext_resource type="Material" uid="uid://cfs1kcj7j6pf4" path="res://assets/udgoap.tres" id="3_102ay"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_7gnwo"]
-height = 1.7640626
+height = 1.7820313
 
 [sub_resource type="ViewportTexture" id="ViewportTexture_5f806"]
 viewport_path = NodePath("SubViewportContainer/SubViewport")
@@ -23,7 +24,7 @@ bg_color = Color(0.2, 0.21568628, 1, 1)
 
 [node name="client" type="CharacterBody3D"]
 collision_layer = 2
-script = ExtResource("1_5f806")
+script = ExtResource("1_4j22d")
 
 [node name="NavigationAgent3D" type="NavigationAgent3D" parent="."]
 debug_enabled = true
@@ -31,12 +32,13 @@ debug_enabled = true
 [node name="Label3D" type="Label3D" parent="."]
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.091015674, 0)
 shape = SubResource("CapsuleShape3D_7gnwo")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
-mesh = ExtResource("2_1t5vp")
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.29999998, 0)
+mesh = ExtResource("2_17uym")
+surface_material_override/0 = ExtResource("3_102ay")
 
 [node name="labels" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)

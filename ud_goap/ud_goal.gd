@@ -3,7 +3,7 @@
 #
 extends Node
 
-class_name GoapGoal
+class_name UDGoapGoal
 
 
 #
@@ -28,5 +28,5 @@ func priority(actor) -> int:
 #
 # For example, in your world state you may store "hunger" as a number, but inside your
 # goap you can deal with it as "is_hungry".
-func get_desired_state() -> Dictionary:
+func get_desired_state(actor) -> Dictionary:
 	return {}

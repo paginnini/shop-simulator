@@ -13,7 +13,7 @@ class_name GoapAction
 # also be used during execution to abort the plan in case the world state
 # does not allow this action anymore.
 #
-func is_valid(blackboard) -> bool:
+func is_valid(actor) -> bool:
 	return true
 
 
@@ -33,7 +33,7 @@ func get_cost(_blackboard = null) -> float:
 #   "has_wood": true
 # }
 #
-func get_preconditions(_blackboard = null) -> Dictionary:
+func get_preconditions() -> Dictionary:
 	return {}
 
 
@@ -44,7 +44,7 @@ func get_preconditions(_blackboard = null) -> Dictionary:
 # {
 #   "has_wood": true
 # }
-func get_effects(_blackboard = null) -> Dictionary:
+func get_effects() -> Dictionary:
 	return {}
 
 
@@ -62,5 +62,5 @@ func get_effects(_blackboard = null) -> Dictionary:
 # or even let your NPC decide how to handle the action. In other words,
 # your NPC could just receive the action name and decide what to do.
 #
-func perform(_actor, _delta, agent) -> bool:
+func perform(_actor, _delta) -> bool:
 	return false

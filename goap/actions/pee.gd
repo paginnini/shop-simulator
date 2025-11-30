@@ -2,38 +2,37 @@ extends GoapAction
 
 class_name PeeAction
 
+var _wc
 
 func get_clazz(): return "PeeAction"
 
-func is_valid(blackboard = null) -> bool:
+func _init():
+	_wc = WorldState.get_elements("wc")[0]
+
+func is_valid(actor = null) -> bool:
 	return true
 
 
 func get_cost(_blackboard = null) -> float:
-	if _blackboard["actor"].ud_goap:
-		return 0.0
-	else:
-		return WorldState.wc_position.distance_to(_blackboard["position"])
+	return WorldState.wc_position.distance_to(_blackboard["position"])
 
-func get_preconditions(_blackboard = null) -> Dictionary:
-	return {}
+func get_preconditions() -> Dictionary:
+	return {
+		"position": _wc.position
+	}
 
-func get_effects(_blackboard = null) -> Dictionary:
+func get_effects() -> Dictionary:
 	return {
 		"used_wc": true,
-		"bladder": 0.0,
-		"position": WorldState.wc_position
+		"needs_wc": false,
+		#"bladder": 0.0,
 	}
 
 
-func perform(actor, _delta, agent) -> bool:
-	if WorldState.wc_position.distance_to(actor.position) <= 1.0:
-		actor._state.set("used_wc", true)
-		actor._state.set("bladder", 0.0)
-		actor.going_already = false
-		return true
-	else:
-		if not actor.going_already:
-			actor.navigation_agent_3d.set_target_position(WorldState.wc_position)
-			actor.going_already = true
-	return false
+func perform(actor, _delta) -> bool:
+	#talvez botar um timer
+	print(str(actor) + " MIJOU")
+	actor._goap_state.set("used_wc", true)
+	actor.current_bladder = 0.0
+	actor.going_already = false
+	return true

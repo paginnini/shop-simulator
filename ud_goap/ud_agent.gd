@@ -8,41 +8,18 @@
 # to unrelated implementation details (movement, collisions, etc)
 extends Node
 
-class_name GoapAgent
+class_name UDGoapAgent
 
-var _goals: Array = []
-var _current_goal: GoapGoal = null
-var _current_plan: Array = []
-var _current_plan_step: int = 0
+var _goals
+var _current_goal
+var _current_plan
+var _current_plan_step = 0
 
-var _actor: CharacterBody3D #client.gd
+var _actor
 
 var _action_planner =  GoapActionPlanner.new()
 
-var can_perform = true
-
-# ---------------------------------------------------------------------------------------------------------------------------
-func init(actor, goals: Array):
-	_actor = actor
-	_goals = goals
-	
-	# actions agr é definido no action_planner
-	#var actions = [
-		#PayAction.new(),
-		#GetOutAction.new(),
-		#WatchAction.new(),
-		#PeeAction.new()
-	#]
-	#for item in WorldState.get_elements("item"):
-		#if not item.client_holding:
-			#actions.push_back(PickItemAction.new(item))
-	#
-	##print("acoes do agente: ")
-	##for i in actions:
-		##print("   ", i.get_clazz())
-	#_action_planner.set_actions(actions)
-
-
+var can_perform
 #
 # On every loop this script checks if the current goal is still
 # the highest priority. if it's not, it requests the action planner a new plan
@@ -53,30 +30,57 @@ func _process(delta):
 	#print("OBJETIVO ATUAL", goal.get_clazz())
 	#print(goal.get_clazz())
 	if _current_goal == null or goal != _current_goal:
-		
+	# You can set in the blackboard any relevant information you want to use
+	# when calculating action costs and status. I'm not sure here is the best
+	# place to leave it, but I kept here to keep things simple.
 		var blackboard = {
-			"position": _actor.global_position,
-			"actor": _actor,
-			"world_state": _actor._goap_state
+			"position": _actor.position,
+			"actor": _actor
 			}
-		#_actor._state.set("watching", false)
+		_actor._state.set("watching", false)
 		_current_goal = goal
 		_current_plan = _action_planner.get_plan(_current_goal, blackboard)
 		_current_plan_step = 0
-		can_perform = true
 		_actor.going_already = false
+		can_perform = true
 	else:
 		_follow_plan(_current_plan, delta)
 
 
-# Returns the highest priority goal available.
-func _get_best_goal():
-	var highest_priority: GoapGoal = null
+# ---------------------------------------------------------------------------------------------------------------------------
+func init(actor, goals: Array):
+	_actor = actor
+	_goals = goals
 	
+	#actions agr é definido no action_planner
+	# var actions = [
+	# 	PayAction.new(),
+	# 	GetOutAction.new(),
+	# 	WatchAction.new(),
+	# 	PeeAction.new()
+	# ]
+	
+	# for item in WorldState.get_elements("item"):
+	# 	if not item.client_holding:
+	# 		actions.push_back(PickItemAction.new(item))
+	
+	# #print("acoes do agente: ")
+	# #for i in actions:
+	# 	#print("   ", i.get_clazz())
+	# _action_planner.set_actions(actions)
+	
+
+
+#d
+# Returns the highest priority goal available.
+#
+func _get_best_goal():
+	var highest_priority
+
 	for goal in _goals:
 		if goal.is_valid(_actor) and (highest_priority == null or goal.priority(_actor) > highest_priority.priority(_actor)):
 			highest_priority = goal
-	
+
 	return highest_priority
 
 
@@ -90,24 +94,21 @@ func _get_best_goal():
 func _follow_plan(plan, delta):
 	if plan.size() == 0:
 		return
-	
-	if not plan[_current_plan_step].is_valid(_actor):
-		_current_goal = null
-		return
-	
+	var is_step_complete
+	#if not plan[_current_plan_step].is_valid():
+	#	_current_goal = null
 	if can_perform:
-		var is_step_complete = plan[_current_plan_step].perform(_actor, delta, self)
-		
-		if is_step_complete:
-			_current_plan_step += 1
-			if _current_plan_step >= plan.size():
-				#plan finish successfully
-				_current_goal = null
-				_current_plan = []
-				_current_plan_step = 0
-			else: print("proxima action")
+		is_step_complete = plan[_current_plan_step].perform(_actor, delta, self)
+	else:
+		pass
 	#print(WorldState._state)
 	#print(is_step_complete)
 	#print(_current_plan_step)
 	#print(plan.size())
+	if is_step_complete and _current_plan_step == plan.size() - 1:
+		can_perform = false
+	
+	if is_step_complete and _current_plan_step < plan.size() - 1:
+		print("proxima action")
+		_current_plan_step += 1
 	
