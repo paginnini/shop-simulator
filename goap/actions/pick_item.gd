@@ -20,7 +20,7 @@ func _init(item):
 
 
 func get_cost(_blackboard  = null) -> float:
-	return default_item_position.distance_to(_blackboard["position"]) * (1 - _blackboard["actor"].preference[_item.type])
+	return (_item.cost/_item.satisfaction) * (1 - _blackboard["actor"].preference[_item.type])
 
 
 func get_preconditions() -> Dictionary:

@@ -8,7 +8,7 @@ var ud_client_scene = preload("res://scenes/ud_client.tscn")
 
 var spawn_pos := Vector3(0.0, 2.0, 10.0)
 
-var num_npcs = 100
+var num_npcs = 1
 
 func _ready() -> void:
 	pass # Replace with function body.

@@ -27,7 +27,7 @@ window/size/viewport_height=1080
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/GdPlanningAI/plugin.cfg")
+enabled=PackedStringArray()
 
 [global_group]
 

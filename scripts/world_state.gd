@@ -10,7 +10,7 @@ var wc_position := Vector3(9.2, 0.0, -28.3)
 var random := false
 
 #0: GOAP, 1: UD-GOAP, 2: BOTH
-var ud := 0
+var ud := 1
 
 var base_seed = hash("npc_1_experiment_0")  # string → numeric seed
 var money_rng

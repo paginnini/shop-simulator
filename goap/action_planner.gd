@@ -4,8 +4,6 @@ class_name GoapActionPlanner
 
 var _actions: Array
 
-
-
 func _init(list_pref) -> void:
 	_actions = [
 		PayAction.new(),

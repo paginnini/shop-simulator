@@ -94,11 +94,11 @@ func _physics_process(delta: float) -> void:
 		update_goap_state()
 		
 		# Update HUD ----------------------------------------------------------
-		var text := "Goal: %s\n" % _current_goal.get_clazz() if _current_goal else ""
+		var text := "Goal: %s\n" % _current_goal.get_clazz() if _current_goal else "None"
 		text += "Money: %f\n" % current_money
 		text += "Bill: %f\n" % current_bill
-		text += "Bladder: %.2f\n" % current_bladder
-		text += "Satisfaction: %.2f\n" % current_satisfaction
+		text += "Bladder: %f\n" % current_bladder
+		text += "Satisfaction: %f\n" % current_satisfaction
 		for key in _goap_state.keys():
 			text += "%s: %s\n" % [key, str(_goap_state[key])]
 		text += "%s\n" % str(list_pref)
@@ -148,7 +148,7 @@ func update_goap_state() -> void:
 	# Boolean assignments for GOAP planning
 	_goap_state["needs_wc"] = current_bladder >= bladder_threshold
 	_goap_state["is_satisfied"] = current_satisfaction >= satisfaction_limit
-	_goap_state["payed"] = current_bill == 0.0
+	_goap_state["payed"] = (current_bill == 0.0)
 	
 	var min_price := 10000000.0
 	var found := false
