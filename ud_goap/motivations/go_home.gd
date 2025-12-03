@@ -4,17 +4,36 @@ class_name GoHomeMotivation
 
 const WEIGHT = 1.0
 
+var _curve = preload("res://curves/home.tres")
+
+var can_be_primary = true
 
 func get_clazz() -> String:
-	return "GoHome"
+	return "GoHomeMotivation"
 
 func get_utility(state) -> float:
-	# Binary utility state:
-	# 0.0 = In Shop (Urgent need to leave if other needs are met)
-	# 1.0 = Left Shop (Satisfied)
-	
-	# Note: In the original file logic, it checked _goap_state["out"].
-	# Since 'actor' holds the state, we access it there.
-	var is_out = state["out"]
-	
-	return (1.0 if is_out else 0.0) * WEIGHT
+	# Wants entertainment to be high.
+	# 0.0 = Bored, 1.0 = Entertained
+	var motivation_val = 1.0
+	if state["done_shopping"] and (state["used_wc"] or not state["needs_wc"]):
+		motivation_val = 0.5
+	if _curve:
+			return _curve.sample(motivation_val)
+	return motivation_val
+
+func get_w_utility(state) -> float:
+	return get_utility(state) * WEIGHT 
+
+#filter keys
+func condition() -> Dictionary:
+	return {
+		"subject": "actor",
+		"variable": "out"
+		}
+
+#generate goal
+func generate_goal(actor) -> Dictionary:
+	return {
+		"filter_key": condition(),
+		"motivation_object": actor
+	}

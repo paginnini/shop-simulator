@@ -16,7 +16,7 @@ func _init() -> void:
 	_tv = WorldState.get_elements("tv")[0]
 
 func get_cost(_blackboard = null) -> float:
-	return _tv.position.distance_to(_blackboard["position"])
+	return 0.0
 
 
 func get_preconditions() -> Dictionary:

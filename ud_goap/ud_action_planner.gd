@@ -4,308 +4,378 @@ class_name UDGoapActionPlanner
 
 var _actions: Array
 
+var debug = false
+
 func _init(list_pref) -> void:
 	_actions = [
-		PayAction.new(),
-		GetOutAction.new(),
-		WatchAction.new(),
-		PeeAction.new()
+		UDPayAction.new(),
+		UDGetOutAction.new(),
+		UDWatchAction.new(),
+		UDPeeAction.new()
 	]
 	
+	# Instantiate actions for Smart Objects (Items)
+	# In a dynamic world, this list might be rebuilt or actions might be discovered at runtime.
 	for item in WorldState.get_elements("item"):
 		if not item.client_holding and item.type in list_pref:
-			_actions.push_back(GoToAction.new(item.position))
-			_actions.push_back(PickItemAction.new(item))
+			_actions.push_back(UDGoToAction.new(item))
+			_actions.push_back(UDPickItemAction.new(item))
 	
-	_actions.push_back(GoToAction.new(WorldState.get_elements("wc")[0].position))
-	_actions.push_back(GoToAction.new(WorldState.get_elements("tv")[0].position))
-	_actions.push_back(GoToAction.new(WorldState.get_elements("caixa")[0].position))
-	_actions.push_back(GoToAction.new(WorldState.get_elements("out")[0].position))
+	_actions.push_back(UDGoToAction.new(WorldState.get_elements("wc")[0]))
+	_actions.push_back(UDGoToAction.new(WorldState.get_elements("tv")[0]))
+	_actions.push_back(UDGoToAction.new(WorldState.get_elements("caixa")[0]))
+	_actions.push_back(UDGoToAction.new(WorldState.get_elements("out")[0]))
 
 # ==============================================================================
-# UD-GOAP Public Interface
+# Public Interface
 # ==============================================================================
 
 func get_plan(motivation: GoapMotivation, world_context: Dictionary) -> Array:
-	if not motivation or world_context.is_empty():
-		push_error("Cannot plan: Motivation or World Context is invalid.")
+	var actor = world_context["actor"]
+	
+	# 1. Generate the Goal / Planning Objective
+	# In UD-GOAP, this returns the Filter Key and the Motivation context
+	var goal_definition = motivation.generate_goal(actor)
+
+	if goal_definition.is_empty() or world_context.is_empty():
+		push_error("Cannot plan: Goal or World Context is invalid.")
 		return []
-		
-	print("\n", str(world_context["actor"]) + " --- Starting UD-GOAP Plan for Motivation: ", motivation.get_clazz(), " ---")
-	WorldState.console_message("Motivation: %s" % motivation.get_clazz())
 	
-	# UD-GOAP: We plan for the specific motivation but consider utility across all motivations
-	var plan = build_udgoap_plan(motivation, world_context)
+	#print("\n", str(actor) + " --- Starting UD-GOAP Plan for: ", motivation.get_clazz(), " ---")
+	#print("\n", str(actor) + " world_context: ", world_context)
+	# 2. Build Plan using Utility Regression
+	#print("\n", str(actor) + "goal_definition: ", goal_definition)
+	var plan = build_plan(goal_definition, world_context, motivation)
 	
-	if plan.is_empty():
-		print(str(world_context["actor"]) + " --- FAILED to find a plan for Motivation: ", motivation.get_clazz(), " ---")
-	else:
-		print(str(world_context["actor"]) + " --- UD-GOAP Plan found successfully ---")
-		_print_udgoap_plan(plan, world_context)
+	#if plan.is_empty():
+		#print(str(actor) + " --- FAILED to find a plan ---")
+	#else:
+		#print(str(actor) + " --- Plan found successfully ---")
+		#_print_plan(plan, world_context)
 	
 	return plan
 
+
 # ==============================================================================
-# UD-GOAP A* Regression Search with Utility
+# UD-GOAP Regression Search
 # ==============================================================================
 
-func build_udgoap_plan(motivation: GoapMotivation, world_context: Dictionary) -> Array:
-	# UD-GOAP: We use the motivation's desired improvement as our starting point
-	# For continuous motivations, we want to improve the utility value
+func build_plan(goal_definition: Dictionary, world_context: Dictionary, primary_motivation: GoapMotivation) -> Array:
+	var actor = world_context["actor"]
 	
-	# 1. Initialization - UD-GOAP uses utility-maximizing search
+	var goal_filter = goal_definition["filter_key"]
+	#print("\n", str(actor) + "goal_filter: ", goal_filter)
+	
+	# We start the search from a "Dummy" node representing the fulfilled goal.
+	var initial_required_state = {} 
+	
+	# Calculate initial utility (Base Utility)
+	var current_total_utility = _calculate_total_utility(actor._udgoap_state, actor)
+	if debug: print("\n", str(actor) + "current_total_utility: ", current_total_utility)
+	
+	# Open list: Nodes to evaluate, sorted by f_cost (which is -Utility)
 	var open_list: Array = []
 	var all_nodes: Array = []
-	var closed_states: Dictionary = {}
+	var closed_states: Dictionary = {} # hash -> index
 	
-	# Create start node representing the motivation we want to improve
-	var start_node = _create_udgoap_node(
-		{"target_motivation": motivation.get_clazz()}, 
-		0.0,  # g_cost starts at 0 (utility gained)
-		_calculate_udgoap_h(motivation, world_context), 
-		null, 
-		-1
-	)
+	# Create Start Node: 'state' is the actor's current world state at the start.
+	var start_node = _create_node(initial_required_state, 0.0, current_total_utility, 0.0, null, -1, world_context.duplicate())
 	open_list.append(start_node)
 	all_nodes.append(start_node)
-	closed_states[_hash_state({"target_motivation": motivation.get_clazz()})] = 0
+	closed_states[_hash_state(initial_required_state, world_context)] = 0
 	
-	# UD-GOAP: Track the best plan found so far
-	var best_final_node_index: int = -1
-	var best_utility_gain: float = -INF
+	#print("\n", str(actor) + " start_node: ", start_node)
 	
-	# 2. A* Search Loop - but we maximize utility instead of minimizing cost
+	var final_node_index: int = -1
+	
+	# --- ADD THIS: Safety Counter ---
+	var iterations: int = 0
+	var max_iterations: int = 100 # Stop after 1000 nodes to prevent freezing
+	
+	# 3. A* Search Loop
 	while not open_list.is_empty():
-		# UD-GOAP: Get node with highest potential utility (F score)
-		# We sort by f_cost descending since we want to maximize utility
-		open_list.sort_custom(func(a, b): return a.f_cost > b.f_cost)
-		var current_node = open_list.pop_front()
-		var current_node_index = all_nodes.find(current_node)
-		
-		# UD-GOAP: Check if current plan achieves sufficient utility improvement
-		# For continuous motivations, we want to see if this plan significantly improves our state
-		var current_utility_gain = _evaluate_plan_utility(current_node, world_context, all_nodes)
-		
-		if current_utility_gain > best_utility_gain:
-			best_utility_gain = current_utility_gain
-			best_final_node_index = current_node_index
-		
-		# UD-GOAP: Check if we've reached a satisfactory utility threshold
-		if current_utility_gain >= 0.1:  # Threshold for "good enough" utility improvement
-			best_final_node_index = current_node_index
+		iterations += 1
+		if iterations > max_iterations:
+			push_warning(str(actor) + " UD-GOAP: Planning iteration limit reached for %s. Aborting." % primary_motivation.get_clazz())
 			break
 		
-		# 3. Expansion: Find actions that could lead to utility improvement
+		if debug: print(str(actor) + "-----------------------------------------------------------")
+		var current_node = open_list.pop_front()
+		var current_node_index = all_nodes.find(current_node)
+		if current_node.action:
+			if debug: print(str(actor) +" current_node.action: ", current_node.action.get_clazz(), " | ", current_node_index)
+			if debug: print(str(actor) + " current_node.state_utility: ", current_node.state_utility)
+		
+		# 3b. Check if Plan is Complete (Goal Satisfied)
+		# Checks if the required state of the current node is met by the ACTUAL world state.
+		if debug: print(str(actor) + " _is_state_met: ", _is_state_met(current_node.required_state, actor._udgoap_state))
+		if current_node.action != null and _is_state_met(current_node.required_state, actor._udgoap_state):
+			# Additionally, for UD-GOAP, ensure we improved utility or have valid stop condition
+			if debug: print(str(actor) + " current_node.state_utility: ", current_node.state_utility)
+			if debug: print(str(actor) + " current_total_utility: ", current_total_utility)
+			final_node_index = current_node_index
+			#print(str(actor) + " ACHOU")
+			break
+			#if current_node.state_utility > current_total_utility:
+				#final_node_index = current_node_index
+				#print(str(actor) + " ACHOU")
+				#break
+		
+		#print(str(actor) + " procura action")
+		# 3c. Expansion: Find actions
 		for action in _actions:
-			if not action.is_valid(world_context["actor"]):
+			if not action.is_valid(current_node.state, current_node.state["actor"]):
 				continue
+			#print("action: ", action.get_clazz())
+			# --- 1. Filter Key Check (UD-GOAP Specific) ---
+			# Only check filter on the first step of regression (last action of plan)
+			if current_node.action == null: 
+				var effects = action.get_effects(current_node.state)
+				if not effects.has(goal_filter.variable):
+					continue
+			#print(str(actor) + " action: ", action.get_clazz()," effects: ", action.get_effects(current_node.state))
+			#print(str(actor) + " goal_filter.variable: ", goal_filter.variable)
+			# --- 2. Standard Validity Check ---
+			# We must check validity against the SIMULATED state of the current node (the state *before* this action)
+			if not action.is_valid(current_node.state, actor):
+				continue
+			#print("action valida")
+			var effects = action.get_effects(current_node.state)
+			var preconditions = action.get_preconditions()
 			
-			# UD-GOAP: Check if this action improves our target motivation OR any motivation
-			var effects = action.get_effects()
+			var achieved_conditions: Dictionary = {}
 			var is_relevant = false
 			
-			# Check if action affects variables relevant to our target motivation
-			# or if it significantly improves overall utility
-			var predicted_utility = _predict_action_utility(action, world_context)
-			if predicted_utility > 0.01:  # Action provides some utility improvement
-				is_relevant = true
+			# --- 3. Relevance & Conflict Check ---
+			if current_node.required_state.is_empty():
+				is_relevant = true # Passed Filter Key check previously
+			else:
+				for key in current_node.required_state.keys():
+					var required_val = current_node.required_state[key]
+					
+					# Relevance
+					if effects.has(key):
+						if effects[key] == required_val:
+							achieved_conditions[key] = true
+							is_relevant = true
+					
+					# Conflict
+					if preconditions.has(key) and preconditions[key] != required_val:
+						is_relevant = false
+						break
+						# Simple conflict check. 
+						#if typeof(required_val) == TYPE_BOOL or typeof(required_val) == TYPE_STRING:
+			if effects.has("position") and not current_node.required_state.has("position"):
+				is_relevant = false
 			
 			if not is_relevant:
 				continue
+			if debug: print(str(actor) + " action: ", action.get_clazz(), " é relevante")
+			if debug: print(str(actor) +" action: ", action.get_clazz(), " preconditions: ", preconditions)
+			if debug: print(str(actor) + " required state: ", current_node.required_state)
+
+			# --- 4. Calculate New State (Requirements for Previous Step) ---
+			var next_required_state: Dictionary = preconditions.duplicate()
+			for key in current_node.required_state.keys():
+				if not achieved_conditions.has(key):
+					next_required_state[key] = current_node.required_state[key]
+			#print("action: ", action.get_clazz(), " next required_state: ", next_required_state)
+			# --- 5. Calculate Action Rating (Delta Utility) ---
+			var rating = _calculate_action_rating(action, current_node.state, actor)
 			
-			# UD-GOAP: Calculate new state and utility gain
-			var preconditions = action.get_preconditions()
-			var next_state: Dictionary = preconditions.duplicate()
+			var new_total_utility = current_node.state_utility + rating 
 			
-			# Add any existing state requirements
-			if current_node.state.has("target_motivation"):
-				next_state["target_motivation"] = current_node.state["target_motivation"]
+			#print("eee ", current_node.state)
+			var new_accumulated_cost = current_node.g_cost + action.get_cost(current_node.state)
 			
-			# UD-GOAP: Calculate utility-based "cost" (we want to maximize utility gain)
-			var utility_gain = _calculate_action_utility_gain(action, world_context)
-			var g_new: float = current_node.g_cost + utility_gain
-			var h_new: float = _calculate_udgoap_h(motivation, world_context)
-			var f_new: float = g_new + h_new  # Total expected utility
+			# --- 7. Create New Node ---
+			# We need to simulate the new world state to pass down for the next step's simulation/validity check.
+			var new_simulated_state = current_node.state.duplicate()
+			for key in effects.keys():
+				# Apply effects to the simulated state
+				if (typeof(effects[key]) == TYPE_FLOAT or typeof(effects[key]) == TYPE_INT) and new_simulated_state.has(key):
+					new_simulated_state[key] += effects[key]
+				else:
+					new_simulated_state[key] = effects[key]
 			
-			var state_hash: String = _hash_state(next_state)
-			
-			# Node Collapsing/Pruning - keep the highest utility path
+			# --- 6. Node Pruning ---
+			var state_hash = _hash_state(next_required_state, new_simulated_state)
 			if closed_states.has(state_hash):
-				var existing_node_index = closed_states[state_hash]
-				var existing_node = all_nodes[existing_node_index]
+				#print("state hash: ", state_hash)
+				var existing_idx = closed_states[state_hash]
+				var existing_node = all_nodes[existing_idx]
 				
-				# If we found a higher utility path to the same state, update
-				if g_new > existing_node.g_cost:  # Higher utility is better
-					existing_node.g_cost = g_new
-					existing_node.f_cost = f_new
+				# Prefer Higher Utility, then Lower Cost
+				if new_total_utility > existing_node.state_utility:
+					existing_node.state_utility = new_total_utility
+					existing_node.f_cost = -new_total_utility
 					existing_node.parent_index = current_node_index
 					existing_node.action = action
-				continue
+					continue
+				elif is_equal_approx(new_total_utility, existing_node.state_utility) and new_accumulated_cost < existing_node.g_cost:
+					existing_node.g_cost = new_accumulated_cost
+					existing_node.parent_index = current_node_index
+					existing_node.action = action
+					continue
+				else:
+					continue 
+			#print("action: ", action.get_clazz(), "passou do pruning")
 			
-			# 4. Create new node
-			var new_node = _create_udgoap_node(next_state, g_new, h_new, action, current_node_index)
+			var new_node = _create_node(
+				next_required_state, 
+				new_accumulated_cost, 
+				new_total_utility, 
+				rating, 
+				action, 
+				current_node_index,
+				new_simulated_state # Pass the simulated state AFTER the action is performed
+			)
 			all_nodes.append(new_node)
 			closed_states[state_hash] = all_nodes.size() - 1
 			
-			# Insert into open list (maintain sorted by utility)
+			# Insert into open list and maintain sorted order by f_cost
 			var inserted = false
 			for i in range(open_list.size()):
-				if f_new > open_list[i].f_cost:  # Higher utility first
+				if -new_total_utility < open_list[i].f_cost:
 					open_list.insert(i, new_node)
 					inserted = true
 					break
 			if not inserted:
 				open_list.append(new_node)
 	
-	# 5. Path Reconstruction
-	if best_final_node_index != -1 and best_utility_gain > 0:
-		var plan: Array = []
-		var current_index = best_final_node_index
-		
-		while current_index != -1:
-			var node = all_nodes[current_index]
-			if node.action:
-				plan.append(node.action)
-			current_index = node.parent_index
-		
-		return plan
+	#print("\nnall nodes: ")
+	#for node in all_nodes:
+		#if node.action:
+			#print(node.action.get_clazz())
+		#else: print("none")
 	
+	#print("\nclosed nodes: ")
+	#for key in closed_states.keys():
+		#print(key)
+	
+	#print("final_node_index: ", final_node_index)
+	# 4. Path Reconstruction
+	if final_node_index != -1:
+		#print("tem algo aqui")
+		var reconstructed_plan: Array = []
+		var curr_idx = final_node_index
+		
+		while curr_idx != -1:
+			var node = all_nodes[curr_idx]
+			if node.action:
+				reconstructed_plan.append(node.action)
+			curr_idx = node.parent_index
+		
+		return reconstructed_plan
+	#print(str(actor) + " iterations: ", iterations)
 	return []
 
 # ==============================================================================
-# UD-GOAP Utility Calculation Functions
+# Utility Calculations
 # ==============================================================================
 
-# Predicts how much utility an action would add if executed
-func _predict_action_utility(action: GoapAction, world_context: Dictionary) -> float:
-	# Simulate the action's effects on the world state
-	var simulated_state = world_context.duplicate()
-	var effects = action.get_effects()
+# Calculates the Agent's total utility for a given set of state variables.
+func _calculate_total_utility(state_vars: Dictionary, actor) -> float:
+	var total: float = 0.0
+	# We access the motivations directly from the actor
 	
-	# Apply effects to simulated state
-	for key in effects.keys():
-		if simulated_state.has(key):
-			if typeof(effects[key]) == TYPE_BOOL:
-				simulated_state[key] = effects[key]
-			else:  # Assume numeric effect
-				simulated_state[key] += effects[key]
-	
-	# Calculate utility of new state across all motivations
-	var new_utility = _calculate_overall_utility(simulated_state, world_context["motivations"])
-	var current_utility = _calculate_overall_utility(world_context, world_context["motivations"])
-	
-	return new_utility - current_utility
+	if actor.get("_motivations"):
+		for mot in actor._motivations:
+			# Each motivation calculates its own satisfaction based on the state dictionary
+			# Then we multiply by its weight
+			#print("\n", str(actor) + " motivation: ", mot.get_clazz(), " utility: ", mot.get_utility(state_vars))
+			total += mot.get_w_utility(state_vars) # * mot.WEIGHT is handled inside           ty in your example
+	return total
 
-# Calculates the actual utility gain of an action in the current context
-func _calculate_action_utility_gain(action: GoapAction, world_context: Dictionary) -> float:
-	return _predict_action_utility(action, world_context)
-
-# Evaluates the total utility of a complete plan
-func _evaluate_plan_utility(node, world_context: Dictionary, all_nodes) -> float:
-	# Reconstruct the plan and simulate its execution
-	var plan: Array = []
-	var current_index = all_nodes.find(node)
+# Calculates the delta utility (Rating) for a specific action
+func _calculate_action_rating(action: UDGoapAction, current_state: Dictionary, actor) -> float:
+	# 1. Simulate the state AFTER the action
+	var simulated_state = current_state.duplicate()
+	var effects = action.get_effects(simulated_state)
 	
-	while current_index != -1:
-		var current_node = all_nodes[current_index]
-		if current_node.action:
-			plan.append(current_node.action)
-		current_index = current_node.parent_index
+	for key in effects:
+		# If the value is numeric, we assume it's additive
+		if (typeof(effects[key]) == TYPE_FLOAT or typeof(effects[key]) == TYPE_INT) and simulated_state.has(key):
+			simulated_state[key] += effects[key]
+		elif typeof(effects[key]) == TYPE_VECTOR3:
+			simulated_state[key] = effects[key]
+		else:
+			# Boolean or Set value
+			simulated_state[key] = effects[key]
 	
-	# Simulate plan execution
-	var simulated_state = world_context.duplicate()
-	for action in plan:
-		var effects = action.get_effects()
-		for key in effects.keys():
-			if simulated_state.has(key):
-				if typeof(effects[key]) == TYPE_BOOL:
-					simulated_state[key] = effects[key]
-				else:
-					simulated_state[key] += effects[key]
+	# 2. Calculate Utilities
+	var util_before = _calculate_total_utility(current_state, actor)
+	var util_after = _calculate_total_utility(simulated_state, actor)
 	
-	# Calculate final utility
-	return _calculate_overall_utility(simulated_state, world_context["motivations"])
-
-# Calculates overall utility across all motivations
-func _calculate_overall_utility(state: Dictionary, motivations: Array) -> float:
-	var total_utility = 0.0
-	for motivation in motivations:
-		total_utility += motivation.get_utility(state)
-	return total_utility
-
-# UD-GOAP Heuristic: Estimates maximum possible utility improvement
-func _calculate_udgoap_h(motivation: GoapMotivation, world_context: Dictionary) -> float:
-	# Estimate how much we can improve the target motivation
-	# This is optimistic - assumes we can achieve maximum satisfaction
-	var current_utility = motivation.get_utility(world_context)
-	return 1.0 - current_utility  # Maximum possible improvement
+	# 3. Rating = Improvement
+	return util_after - util_before
 
 # ==============================================================================
-# Internal Helper Functions (Modified for UD-GOAP)
+# Helper Functions
 # ==============================================================================
 
-func _create_udgoap_node(state: Dictionary, g: float, h: float, action: GoapAction, parent_index: int) -> Dictionary:
+func _create_node(req_state: Dictionary, accumulated_cost, state_utility: float, action_rating: float, action: UDGoapAction, parent_index: int, state: Dictionary) -> Dictionary:
+	# UD-GOAP Metric: We want to MAXIMIZE utility.
+	# A* Min-Heap sorts by lowest number. So we use NEGATIVE utility.
+	var a_star_metric: float = -state_utility
+	
 	return {
-		"state": state,
-		"g_cost": g,      # Accumulated utility gain
-		"h_cost": h,      # Estimated remaining utility potential
-		"f_cost": g + h,  # Total expected utility
+		"required_state": req_state,
+		"state_utility": state_utility,
+		"action_rating": action_rating,
+		"g_cost": accumulated_cost,
+		"f_cost": a_star_metric,
 		"action": action,
-		"parent_index": parent_index
+		"parent_index": parent_index,
+		"state": state
 	}
 
 func _is_state_met(required_state: Dictionary, current_state: Dictionary) -> bool:
+	#print("fff required_state: ", required_state) #comes from node
+	#print("fff current_state: ", current_state) #actor.+udgoap_state real
 	for key in required_state.keys():
-		var required_value = required_state[key]
+		var required_val = required_state[key]
+		
+		# If the requirement is not in world state, we can't satisfy it
 		if not current_state.has(key):
 			return false
+		var actual_val = current_state[key]
+		#print("tem chave: ", actual)
 		
-		# Handle different types appropriately
-		if typeof(required_value) == TYPE_BOOL:
-			if current_state[key] != required_value:
+		# For Booleans/Strings, check exact match
+		if typeof(required_val) == TYPE_BOOL or typeof(required_val) == TYPE_STRING:
+			if actual_val != required_val:
 				return false
-		else:  # Assume numeric - check if current meets or exceeds requirement
-			if current_state[key] < required_value:
-				return false
+		# For numbers, usually regression implies "We have enough". 
+		# But standard GOAP checks equality.
+		# If required is just "exists", we might skip value check?
+		# Sticking to equality for safety, or custom logic for floats if needed.
+		elif actual_val != required_val:
+			return false
+			
 	return true
 
-func _hash_state(state: Dictionary) -> String:
+
+func _hash_state(required_state: Dictionary, simulated_state: Dictionary) -> String:
+	return _hash_dict(required_state) + "|" + _hash_dict(simulated_state)
+
+func _hash_dict(state: Dictionary) -> String:
+	if state.is_empty():
+		return "{}"
+	
 	var keys = state.keys()
 	keys.sort()
 	var hash_parts: Array = []
 	for key in keys:
 		hash_parts.append(str(key) + ":" + str(state[key]))
-	return ";".join(hash_parts)
+	return "{" + ";".join(hash_parts) + "}"
 
-# ==============================================================================
-# Debugging
-# ==============================================================================
 
-func _print_udgoap_plan(plan, blackboard):
-	var actions = []
-	var pri = []
-	var total_utility_gain = 0.0
-	
-	# Calculate utility gain for the plan
-	var initial_utility = _calculate_overall_utility(blackboard, blackboard["motivations"])
-	var simulated_state = blackboard.duplicate()
-	
+
+# Prints plan. Used for Debugging only.
+func _print_plan(plan, world_context):
+	var action_names = []
 	for a in plan:
-		actions.push_back([a.get_clazz(), _predict_action_utility(a, simulated_state)])
-		pri.push_back(a.get_clazz())
-		
-		# Update simulated state
-		var effects = a.get_effects()
-		for key in effects.keys():
-			if simulated_state.has(key):
-				if typeof(effects[key]) == TYPE_BOOL:
-					simulated_state[key] = effects[key]
-				else:
-					simulated_state[key] += effects[key]
-	
-	var final_utility = _calculate_overall_utility(simulated_state, blackboard["motivations"])
-	total_utility_gain = final_utility - initial_utility
-	
-	print(str(blackboard["actor"]) + " ", pri)
-	print(str(blackboard["actor"]) + " Total Utility Gain: ", total_utility_gain)
-	WorldState.console_message({"utility_gain": total_utility_gain, "actions": actions})
+		action_names.push_back(a.get_clazz())
+		#cost += a.get_cost(world_context)
+	print(str(world_context["actor"]) + " Final Plan: ", action_names)

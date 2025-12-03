@@ -36,19 +36,19 @@ func get_effects() -> Dictionary:
 
 func perform(actor, _delta) -> bool:
 	if actor.current_bill == 0.0:
-		print(str(actor) + " NAO PRECISA PAGAR")
+		#print(str(actor) + " NAO PRECISA PAGAR")
 		actor._goap_state.set("payed", true)
 		actor.going_already = false
 		return true
 	
 	#print("CHEGOU NO CAIXA ---------------------------------------------------------------------------------")
 	if actor.current_bill <= actor.current_money:
-		print(str(actor) + " PAGOU")
+		#print(str(actor) + " PAGOU")
 		actor.current_money -= actor.current_bill
 		actor.current_bill = 0.0
 		actor._goap_state.set("payed", true)
 		actor.going_already = false
 		return true
 	else:
-		print(str(actor) + " ERRO: BILL FICOU MAIOR QUE O DINHEIRO DO CARA")
+		#print(str(actor) + " ERRO: BILL FICOU MAIOR QUE O DINHEIRO DO CARA")
 		return false

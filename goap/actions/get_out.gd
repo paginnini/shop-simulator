@@ -16,7 +16,7 @@ func is_valid(actor = null) -> bool:
 
 
 func get_cost(_blackboard = null) -> float:
-	return WorldState.out_position.distance_to(_blackboard["position"])
+	return 0.0
 
 func get_preconditions() -> Dictionary:
 	return {

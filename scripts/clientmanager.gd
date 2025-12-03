@@ -4,13 +4,15 @@ var client_scene = preload("res://scenes/client.tscn")
 var ud_client_scene = preload("res://scenes/ud_client.tscn")
 @onready var spawn_area := $Area3D
 
-@onready var ud := WorldState.ud
+var ud
 
 var spawn_pos := Vector3(0.0, 2.0, 10.0)
 
-var num_npcs = 1
+var num_npcs
 
 func _ready() -> void:
+	ud = WorldState.ud
+	num_npcs = WorldState.num_npcs
 	pass # Replace with function body.
 
 
@@ -45,10 +47,12 @@ func _on_timer_timeout() -> void:
 	#print('cria cliente')
 	if ud == 0:
 		var new_client = client_scene.instantiate()
+		new_client.name = "npc_%s" % num
 		new_client.position = spawn_pos
 		add_child(new_client)
 	elif ud == 1:
 		var new_ud_client = ud_client_scene.instantiate()
+		new_ud_client.name = "npc_ud_%s" % num
 		new_ud_client.position = spawn_pos
 		add_child(new_ud_client)
 	else:

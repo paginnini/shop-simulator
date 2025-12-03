@@ -24,8 +24,8 @@ func _init(list_pref) -> void:
 	
 	
 	#print("acoes do agente: ")
-	for i in _actions:
-		print("   ", i.get_clazz())
+	#for i in _actions:
+		#print("   ", i.get_clazz())
 
 # ==============================================================================
 # Public Interface
@@ -36,17 +36,17 @@ func get_plan(goal: GoapGoal, world_context: Dictionary) -> Array:
 		push_error("Cannot plan: Goal or World Context is invalid.")
 		return []
 		
-	print("\n", str(world_context["actor"]) + " --- Starting Plan for Goal: ", goal.get_clazz(), " ---")
-	WorldState.console_message("Goal: %s" % goal.get_clazz())
+	#print("\n", str(world_context["actor"]) + " --- Starting Plan for Goal: ", goal.get_clazz(), " ---")
+	#WorldState.console_message("Goal: %s" % goal.get_clazz())
 	
 	# The A* search is performed backward (regression) from the goal's pre-conditions.
 	var plan = build_plan(goal, world_context)
 	
-	if plan.is_empty():
-		print(str(world_context["actor"]) + " --- FAILED to find a plan for Goal: ", goal.get_clazz(), " ---")
-	else:
-		print(str(world_context["actor"]) + " --- Plan found successfully ---")
-		_print_plan(plan, world_context)
+	#if plan.is_empty():
+		#print(str(world_context["actor"]) + " --- FAILED to find a plan for Goal: ", goal.get_clazz(), " ---")
+	#else:
+		#print(str(world_context["actor"]) + " --- Plan found successfully ---")
+		#_print_plan(plan, world_context)
 	
 	return plan
 
@@ -80,12 +80,11 @@ func build_plan(goal: GoapGoal, world_context: Dictionary) -> Array:
 	var final_node_index: int = -1
 	
 	while not open_list.is_empty():
-		# Get the node with the lowest F cost (A* requirement)
-		# NOTE: In production, this should be a proper priority queue for performance.
 		#print(open_list)
+		# Get the node with the lowest F cost (A* requirement)
 		var current_node = open_list.pop_front()
 		var current_node_index = all_nodes.find(current_node)
-		print(str(world_context["actor"]) + " current goal state: ", current_node.state)
+		#print(str(world_context["actor"]) + " current goal state: ", current_node.state)
 		
 		# Check if the current state is satisfied by the World Context (Goal Reached)
 		if _is_state_met(current_node.state, world_context):
@@ -242,133 +241,6 @@ func _hash_state(state: Dictionary) -> String:
 
 
 #
-#-------------------------------------------------------------------------------------------------------------------------------------
-#
-
-
-# func _build_plan_greedy(state, blackboard, sequence) -> bool:
-# 	#print("\n-----------------COMEÇO DA FUNÇÃO-----------------")
-# 	var has_followup = false
-# 	# checks if the blackboard contains data that can
-# 	# satisfy the current state.
-# 	#print("\nblackboard: ", blackboard)
-#	
-# 	#print("\nstate atual antes do blackboard:\n", state)
-# 	var duplicado_state = state.duplicate()
-# 	for s in duplicado_state:
-# 		if typeof(duplicado_state[s]) == TYPE_BOOL:
-# 			if duplicado_state[s] == blackboard.get(s):
-# 				state.erase(s)
-# 		elif typeof(duplicado_state[s]) == TYPE_FLOAT:
-# 			if duplicado_state[s] <= blackboard[s]:
-# 				state.erase(s)
-# 	#print("\nstate atual apos verificar com blackboard:\n", state)
-#	
-# 	if state.is_empty():
-# 		return true
-#	
-# 	var best_choice = null
-# 	var minimum_cost = 10000
-# 	##print("\n_actions antes: ", _actions.size())
-# 	var _ac = _actions.duplicate()
-# 	for action in _ac:
-# 		if not action:
-# 			_actions.erase(action)
-# 	_ac = []
-# 	##print("\n_actions depois: ", _actions.size())
-# 	for action in _actions:
-# 		#if action.get_clazz() == "PickItemAction":
-# 			#print("-------------------------------------------------")
-# 			#print("action nome: ", action.get_clazz())
-# 			#print("action: ", action)
-# 			#print("item cost: ", action._item.cost)
-# 			#print("preference: ", blackboard["actor"].preference[action._item.type])
-# 			#print("distance: ", action.default_item_position.distance_to(blackboard["position"]))
-# 			#print("action cost: ", action.get_cost(blackboard))
-#		
-# 		if not action.is_valid(blackboard):
-# 			#print("action nao é valida")
-# 			continue
-# 		#print("action valida")
-#		
-# 		var effects = action.get_effects(blackboard.actor)
-#		
-# 		for s in state:
-# 			#print("effects: ",s,": ", effects.get(s))
-# 			if not effects.get(s): continue
-# 			if typeof(state[s]) == TYPE_BOOL:
-# 				if state[s] == effects.get(s):
-# 					if action.get_cost(blackboard) < minimum_cost:
-# 						best_choice = action
-# 						minimum_cost = action.get_cost(blackboard)
-# 			elif typeof(state[s]) == TYPE_FLOAT:
-# 				if effects.get(s):
-# 					if action.get_cost(blackboard) < minimum_cost:
-# 						best_choice = action
-# 						minimum_cost = action.get_cost(blackboard)
-# 	#print("best choice: ", best_choice)
-#	
-# 	if best_choice:
-#		
-# 		if best_choice.get_clazz() == "PickItemAction":
-# 			blackboard.set(str(best_choice._item)+"is_picked_up", true)
-# 			print("-------------------------------------------------")
-# 			#print("action nome: ", best_choice.get_clazz())
-# 			#print("action: ", best_choice)
-# 			print("item cost: ", best_choice._item.cost)
-# 			print("money: ", blackboard["money"])
-# 			print("bill: ", blackboard["bill"])
-# 			#print("preference: ", blackboard["actor"].preference[best_choice._item.type])
-# 			#print("distance: ", best_choice.default_item_position.distance_to(blackboard["position"]))
-# 			#print("action cost: ", best_choice.get_cost(blackboard))
-# 		#print("\nbest_choice cost: ", best_choice.get_cost(blackboard))
-# 		#print("\nachou ação\n", best_choice.get_clazz())
-#		
-#		
-# 		var preconditions = best_choice.get_preconditions(blackboard.actor)
-# 		var effects = best_choice.get_effects(blackboard.actor)
-#		
-# 		for p in preconditions:
-# 			state[p] = preconditions[p]
-#		
-# 		duplicado_state = state.duplicate()
-# 		#print("\ndesired_state atual:\n", desired_state)
-# 		#print("\ndesired_state: ", desired_state)
-# 		for s in duplicado_state:
-# 			#print("\ns: ", s)
-# 			if typeof(duplicado_state[s]) == TYPE_BOOL:
-# 				if duplicado_state[s] == effects.get(s):
-# 					#print("bool element was achieved:\ndesired_state[s]: ", desired_state[s],"\neffects.get(s): ", effects.get(s))
-# 					blackboard[s] = true
-# 					state.erase(s)
-# 			elif typeof(duplicado_state[s]) == TYPE_FLOAT:
-# 				if effects.get(s):
-# 					if duplicado_state[s] > effects.get(s) + blackboard.get(s):
-# 						blackboard[s] += effects.get(s)
-# 						#print("float elements was added to blackboard:\ndesired_state[s]: ", desired_state[s],"\neffects.get(s): ", effects.get(s))
-# 						#print("blackboard.get(s): ", blackboard.get(s))
-# 					else:
-# 						blackboard[s] += effects.get(s)
-# 						#print("float element was achieved:\ndesired_state[s]: ", desired_state[s],"\neffects.get(s): ", effects.get(s))
-# 						#print("blackboard.get(s): ", blackboard.get(s))
-# 						state.erase(s)
-#		
-# 		#print("teste------------------------")
-# 		if state.is_empty() or _build_plan_greedy(state, blackboard, sequence):
-# 			#step.children.push_back(s)
-# 			sequence.push_back(best_choice)
-# 			#print("\nsequence:\n", sequence)
-# 			has_followup = true
-#	
-#	
-# 	#print("has_followup: ", has_followup)
-# 	##print("-----------------FIM DA FUNÇÃO-----------------")
-# 	return true
-
-
-
-
-#
 # Prints plan. Used for Debugging only.
 #
 func _print_plan(plan, blackboard):
@@ -379,5 +251,5 @@ func _print_plan(plan, blackboard):
 		actions.push_back([a.get_clazz(), a.get_cost(blackboard)])
 		pri.push_back(a.get_clazz())
 		custo += a.get_cost(blackboard)
-	print(str(blackboard["actor"]) + " ", pri)
+	#print(str(blackboard["actor"]) + " ", pri)
 	WorldState.console_message({"cost": custo, "actions": actions})

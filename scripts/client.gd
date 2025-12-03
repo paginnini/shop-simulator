@@ -2,7 +2,7 @@ extends CharacterBody3D
 
 @onready var navigation_agent_3d: NavigationAgent3D = $NavigationAgent3D
 
-const SPEED = 5.0
+const SPEED = 10.0
 const JUMP_VELOCITY = 4.5
 
 var going_already = false
@@ -48,7 +48,17 @@ var _action_planner
 
 var can_perform = true
 
+##################test variables##################
+var dinheiro_inicial
+#dinheiro final == current_money
+var vezes_planejou = 0
+#satisfacao_final == current satisfaction
+var tempo_inicial
+var tempo_final
+##################test variables##################
+
 func _ready():
+	tempo_inicial = Time.get_unix_time_from_system()
 	#define variaveis aleatorias para esse npc
 	if WorldState.random:
 		current_money = snappedf(randf_range(40.0, 150.0), 0.01)
@@ -57,6 +67,7 @@ func _ready():
 			preference[key] = randi_range(2, 8) / 10.0      # convert to 0.0–1.0 in 0.1 steps
 	else:
 		current_money = snappedf(WorldState.money_rng.randf_range(10.0, 140.0), 0.01)
+		dinheiro_inicial = current_money
 		current_bladder = snappedf(WorldState.bladder_rng.randf_range(0.0, 70.0), 0.01)
 		for key in preference.keys():
 			preference[key] = WorldState.preference_rng.randi_range(2, 8) / 10.0      # convert to 0.0–1.0 in 0.1 steps
@@ -70,7 +81,7 @@ func _ready():
 		for i in range(quant):
 			if list_pref.size() > 0:
 				list_pref.pop_back()
-	print_npc_variables()
+	#print_npc_variables()
 	
 	$SubViewportContainer/SubViewport/ProgressBar.max_value = satisfaction_limit
 	$SubViewportContainer/SubViewport/ProgressBar2.max_value = bladder_limit
@@ -123,6 +134,7 @@ func _physics_process(delta: float) -> void:
 			blackboard.merge(WorldState._state, true)
 			_goap_state.set("watching", false)
 			_current_goal = goal
+			vezes_planejou += 1
 			_current_plan = _action_planner.get_plan(_current_goal, blackboard)
 			_current_plan_step = 0
 			can_perform = true
@@ -202,7 +214,7 @@ func _follow_plan(plan, delta):
 				_current_goal = null
 				_current_plan = []
 				_current_plan_step = 0
-			else: print(str(self) + " proxima action")
+			#else: print(str(self) + " proxima action")
 	#print(WorldState._state)
 	#print(is_step_complete)
 	#print(_current_plan_step)
@@ -210,11 +222,13 @@ func _follow_plan(plan, delta):
 
 
 func vanish() -> void:
+	var results = "%s|%f|%f|%d|%f|%s|%s" % [str(self), dinheiro_inicial, current_money, vezes_planejou, current_satisfaction, str(tempo_inicial), str(Time.get_unix_time_from_system()) ]
+	WorldState.write_to_file(results)
 	for i in itens_list:
 		if i: i.queue_free()
 	itens_list = []
-	#self.queue_free()
-
+	self.queue_free()
+	WorldState.close_game(self)
 
 func print_npc_variables():
 	print(str(self) + "------------------------------------------------------------------NEW GOAP NPC------------------------------------------------------------------")

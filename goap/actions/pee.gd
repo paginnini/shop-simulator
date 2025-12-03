@@ -31,7 +31,7 @@ func get_effects() -> Dictionary:
 
 func perform(actor, _delta) -> bool:
 	#talvez botar um timer
-	print(str(actor) + " MIJOU")
+	#print(str(actor) + " MIJOU")
 	actor._goap_state.set("used_wc", true)
 	actor.current_bladder = 0.0
 	actor.going_already = false

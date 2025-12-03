@@ -21,7 +21,7 @@ bg_color = Color(0.49411765, 0.5568628, 1, 0.16470589)
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r26j7"]
 bg_color = Color(0.2, 0.21568628, 1, 1)
 
-[node name="client" type="CharacterBody3D"]
+[node name="client" type="CharacterBody3D" groups=["client"]]
 collision_layer = 2
 script = ExtResource("1_5f806")
 
@@ -43,6 +43,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
 
 [node name="label_money" type="Label3D" parent="labels"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3, 0)
+visible = false
 billboard = 1
 text = "hello"
 horizontal_alignment = 0

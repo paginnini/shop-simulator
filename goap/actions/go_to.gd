@@ -28,14 +28,14 @@ func get_effects() -> Dictionary:
 func perform(actor, _delta) -> bool:
 	#print("esta performando, location: ", _location)
 	if _location.distance_to(actor.position) <= actor.do_distance:
-		print(str(actor) + " CHEGOU || ||")
+		#print(str(actor) + " CHEGOU || ||")
 		actor.going_already = false
 		return true
 	else:
 		#print(actor.going_already)
 		if not actor.going_already:
-			print(str(actor) + " INDO --> -->")
+			#print(str(actor) + " INDO --> -->")
 			actor.navigation_agent_3d.set_target_position(_location)
-			print(str(actor) + " set_target_position: ", actor.navigation_agent_3d.target_position)
+			#print(str(actor) + " set_target_position: ", actor.navigation_agent_3d.target_position)
 			actor.going_already = true
 	return false

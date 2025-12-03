@@ -10,9 +10,11 @@ var wc_position := Vector3(9.2, 0.0, -28.3)
 var random := false
 
 #0: GOAP, 1: UD-GOAP, 2: BOTH
-var ud := 1
+var ud := 0
+var num_npcs := 0
+var base_seed := 0
+var result_path
 
-var base_seed = hash("npc_1_experiment_0")  # string → numeric seed
 var money_rng
 var bladder_rng
 var preference_rng
@@ -21,6 +23,7 @@ var item_cost_rng
 var item_satisfaction_rng
 var item_hydration_rng
 var type_quant_rng
+var tv_value_rng
 
 var item_types = ["refrigerante",
 				"suco",
@@ -30,7 +33,26 @@ var item_types = ["refrigerante",
 				"massa"
 				]
 
-func _init():
+func _ready():
+	var file_path = "res://input.txt"
+	
+	var file = FileAccess.open(file_path, FileAccess.READ)
+	if file == null:
+		push_error("Could not open file")
+		return
+	
+	var content = file.get_as_text().strip_edges()
+	var parts = content.split(" ")
+	
+	ud = int(parts[0])
+	num_npcs = int(parts[1])
+	base_seed = hash("npc_%d_experiment_%d" % [num_npcs, int(parts[2])])
+	
+	print("npc =", ud, " num =", num_npcs, " experiment =", base_seed)
+	
+	result_path = "res://results/%d_npc_%d_experiment_%d.txt" % [ud, num_npcs, int(parts[2])]
+	print(result_path)
+	
 	money_rng = RandomNumberGenerator.new()
 	money_rng.seed = hash("money" + str(base_seed))
 	bladder_rng = RandomNumberGenerator.new()
@@ -47,6 +69,9 @@ func _init():
 	item_hydration_rng.seed = hash("item_hydration" + str(base_seed))
 	type_quant_rng = RandomNumberGenerator.new()
 	type_quant_rng.seed = hash("type_quant" + str(base_seed))
+	tv_value_rng = RandomNumberGenerator.new()
+	tv_value_rng.seed = hash("tv_value" + str(base_seed))
+	
 	
 
 func get_state(state_name, default = null):
@@ -91,3 +116,19 @@ func state_display_update():
 	for i in _state:
 		wdisplay_text += "%s: %s\n" %[str(i), str(get_state(i))]
 	state_display.text = wdisplay_text
+
+func write_to_file(text: String) -> void:
+	var file_access: FileAccess = FileAccess.open(result_path, FileAccess.READ_WRITE)
+	if file_access != null:
+		file_access.seek_end() # Move the pointer to the end of the file
+		file_access.store_line(text)
+	else:
+		push_error("Failed to open results.txt for writing")
+
+
+func close_game(caller):
+	var clientes = get_elements("client")
+	print(clientes)
+	if clientes.size() == 1 and clientes[0] == caller:
+		print("quit")
+		get_tree().quit()
